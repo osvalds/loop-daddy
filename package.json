@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@reecelucas/react-use-hotkeys": "^1.2.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-hot-keys": "^2.6.0",
     "react-scripts": "3.4.1",
     "styled-components": "^5.1.1",
     "use-sound": "^1.0.2"

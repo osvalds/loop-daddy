@@ -1,16 +1,46 @@
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import useSound from "use-sound";
-import useHotkeys from "@reecelucas/react-use-hotkeys";
+import Hotkeys from "react-hot-keys"
+import styled from "styled-components"
+
+const LaunchpadButton = styled.button`
+  border-radius: 5px;
+  border: none;
+  background: radial-gradient(#ffea28, #ec983c);
+  filter: ${props => props.isActive ? "hue-rotate(90deg)" : "hue-rotate(0)"}
+`
 
 
 function SoundSoundSound({name, url, keyboard}) {
     const [play] = useSound(`${process.env.PUBLIC_URL + url}`, {interrupt: true})
-    useHotkeys(keyboard, play)
+    const [isActive, setIsActive] = useState(false)
+
+    const onDown = useCallback(() => {
+        setIsActive(true)
+        play()
+    }, [setIsActive, play])
 
 
-    return <button onClick={play}>
-        {name} ({keyboard})
-    </button>
+    return (
+        <Hotkeys keyName={keyboard}
+                 onKeyDown={onDown}
+                 onKeyUp={() => setIsActive(false)}
+        >
+            <LaunchpadButton
+                onMouseDown={onDown}
+                onMouseUp={
+                    () => setIsActive(false)
+                }
+                onTouchStart={onDown}
+                isActive={isActive}
+                onTouchEnd={e => {
+                    e.preventDefault()
+                    setIsActive(false)
+                }}>
+                {name} ({keyboard})
+            </LaunchpadButton>
+        </Hotkeys>)
+
 }
 
 const sampleKit = [
@@ -41,13 +71,36 @@ const defaultKeyboardMap =
         8: ["q", "w", "e", "a", "s", "d", "z", "x"]
     }
 
+const LaunchpadWrapper = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+    grid-auto-rows: 1fr;
+    grid-gap: 12px;
+    
+    
+    &::before {
+        content: '';
+        width: 0;
+        padding-bottom: 100%;
+        grid-row: 1 / 1;
+        grid-column: 1 / 1;
+    }
+    
+    & > *:first-child {
+        grid-row: 1 / 1;
+        grid-column: 1 / 1;
+    } qw
+`
+
 function App() {
     return (
         <div className="App">
-            {sampleKit.map((sample, index) => {
-                return <SoundSoundSound key={sample.name} {...sample}
-                                        keyboard={defaultKeyboardMap[sampleKit.length][index]}/>
-            })}
+            <LaunchpadWrapper>
+                {sampleKit.map((sample, index) => {
+                    return <SoundSoundSound key={sample.name} {...sample}
+                                            keyboard={defaultKeyboardMap[sampleKit.length][index]}/>
+                })}
+            </LaunchpadWrapper>
         </div>
     );
 }
