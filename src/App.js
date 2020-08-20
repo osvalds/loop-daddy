@@ -10,9 +10,7 @@ const LaunchpadButton = styled.button`
   filter: ${props => props.isActive ? "hue-rotate(90deg)" : "hue-rotate(0)"}
 `
 
-
 function SoundSoundSound({onPlay, name, keyboard}) {
-    // const [play] = useSound(`${process.env.PUBLIC_URL + url}`, {interrupt: true})
     const [isActive, setIsActive] = useState(false)
 
     const onDown = useCallback(() => {
@@ -20,12 +18,7 @@ function SoundSoundSound({onPlay, name, keyboard}) {
         onPlay()
     }, [setIsActive, onPlay])
 
-
     return (
-        // <Hotkeys keyName={keyboard}
-        //          onKeyDown={onDown}
-        //          onKeyUp={() => setIsActive(false)}
-        // >
         <LaunchpadButton
             onMouseDown={onDown}
             onMouseUp={
@@ -39,7 +32,6 @@ function SoundSoundSound({onPlay, name, keyboard}) {
             }}>
             {name} ({keyboard})
         </LaunchpadButton>
-        // </Hotkeys>
     )
 
 }
@@ -90,7 +82,7 @@ const buildHowlerSpriteObj = (spriteMap) => {
     const sprite = {}
 
     for (let [k, v] of spriteArray) {
-        sprite[k] = [v.start * 1000, Math.floor(v.end * 1000)]
+        sprite[k] = [v.start * 1000, (v.end - v.start) * 1000]
     }
 
     return sprite;
@@ -98,7 +90,6 @@ const buildHowlerSpriteObj = (spriteMap) => {
 
 function App() {
     const howlerSprite = buildHowlerSpriteObj(Sprite808.spritemap);
-    console.log(howlerSprite)
     const keyMap = defaultKeyboardMap[Object.keys(howlerSprite).length]
     const [play] = useSound(`${process.env.PUBLIC_URL}/drums/808/808sprite.mp3`, {sprite: howlerSprite})
 
@@ -106,34 +97,19 @@ function App() {
         const sampleIndex = keyMap.indexOf(event.key)
         const spriteId = Object.keys(howlerSprite)[sampleIndex]
 
-
         if (sampleIndex > -1) {
-            console.log("spriteId", spriteId)
             play({id: spriteId})
         }
     }, [howlerSprite, keyMap, play]);
 
     useEffect(() => {
-        const handleSound = (event) => {
-            const sampleIndex = keyMap.indexOf(event.key)
-            const spriteId = Object.keys(howlerSprite)[sampleIndex]
-
-
-            if (sampleIndex > -1) {
-                console.log("spriteId", spriteId)
-                play({id: spriteId})
-            }
-        }
-
-        console.log("running")
         document.addEventListener("keydown", handleSound, false);
 
         return () => {
             document.removeEventListener("keydown", handleSound, false)
         };
-    }, [play]);
+    }, [handleSound]);
 
-    console.log("rendering")
     return (
         <div className="App">
             <LaunchpadWrapper>
@@ -141,10 +117,7 @@ function App() {
                     return <SoundSoundSound key={k}
                                             name={k}
                                             keyboard={keyMap[index]}
-                                            // onPlay={() => play({id: k})}
-                                            onPlay={() => {
-                                                return null
-                                            }}
+                                            onPlay={() => play({id: k})}
                     />
                 })}
             </LaunchpadWrapper>
