@@ -5,38 +5,6 @@ import Sprite808 from "./drumkitSprites/808sprite.json";
 import Sprite909 from "./drumkitSprites/909sprite.json";
 import SpriteRoland from "./drumkitSprites/rolandSprite.json";
 
-const LaunchpadButton = styled.button`
-  border-radius: 5px;
-  border: none;
-  background: radial-gradient(#ffea28, #ec983c);
-  filter: ${props => props.isActive ? "hue-rotate(90deg)" : "hue-rotate(0)"}
-`
-
-function SoundSoundSound({onPlay, name, keyboard}) {
-    const [isActive, setIsActive] = useState(false)
-
-    const onDown = useCallback(() => {
-        setIsActive(true)
-        onPlay()
-    }, [setIsActive, onPlay])
-
-    return (
-        <LaunchpadButton
-            onMouseDown={onDown}
-            onMouseUp={
-                () => setIsActive(false)
-            }
-            onTouchStart={onDown}
-            isActive={isActive}
-            onTouchEnd={e => {
-                e.preventDefault()
-                setIsActive(false)
-            }}>
-            {name} ({keyboard})
-        </LaunchpadButton>
-    )
-}
-
 // 1 -> q
 // 2 -> q,w
 // 3 -> q,w,e
@@ -58,27 +26,6 @@ const defaultKeyboardMap =
         8: ["q", "w", "e", "a", "s", "d", "z", "x"],
         9: ["q", "w", "e", "a", "s", "d", "z", "x", "c"]
     }
-
-const LaunchpadWrapper = styled.div`
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-    grid-auto-rows: 1fr;
-    grid-gap: 12px;
-    
-    
-    &::before {
-        content: '';
-        width: 0;
-        padding-bottom: 100%;
-        grid-row: 1 / 1;
-        grid-column: 1 / 1;
-    }
-    
-    & > *:first-child {
-        grid-row: 1 / 1;
-        grid-column: 1 / 1;
-    } 
-`
 
 const buildHowlerSpriteObj = (spriteMap) => {
     const spriteArray = Object.entries(spriteMap)
@@ -112,8 +59,60 @@ const drumkits = {
     }
 }
 
+const LaunchpadButton = styled.button`
+  border-radius: 5px;
+  border: none;
+  background: radial-gradient(#ffea28, #ec983c);
+  filter: ${props => props.isActive ? "hue-rotate(90deg)" : "hue-rotate(0)"}
+`
+
+function SoundSoundSound({onPlay, name, keyboard}) {
+    const [isActive, setIsActive] = useState(false)
+
+    const onDown = useCallback(() => {
+        setIsActive(true)
+        onPlay()
+    }, [setIsActive, onPlay])
+
+    return (
+        <LaunchpadButton
+            onMouseDown={onDown}
+            onMouseUp={
+                () => setIsActive(false)
+            }
+            onTouchStart={onDown}
+            isActive={isActive}
+            onTouchEnd={e => {
+                e.preventDefault()
+                setIsActive(false)
+            }}>
+            {name} ({keyboard})
+        </LaunchpadButton>
+    )
+}
+
+const LaunchpadWrapper = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+    grid-auto-rows: 1fr;
+    grid-gap: 12px;
+    
+    
+    &::before {
+        content: '';
+        width: 0;
+        padding-bottom: 100%;
+        grid-row: 1 / 1;
+        grid-column: 1 / 1;
+    }
+    
+    & > *:first-child {
+        grid-row: 1 / 1;
+        grid-column: 1 / 1;
+    } 
+`
+
 function Launchpad({sprite, url}) {
-    console.log(sprite)
     const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
     const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite})
 
