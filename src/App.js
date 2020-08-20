@@ -1,7 +1,9 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import useSound from "use-sound";
-import styled from "styled-components"
-import Sprite808 from "./drumkitSprites/808sprite.json"
+import styled from "styled-components";
+import Sprite808 from "./drumkitSprites/808sprite.json";
+import Sprite909 from "./drumkitSprites/909sprite.json";
+import SpriteRoland from "./drumkitSprites/rolandSprite.json";
 
 const LaunchpadButton = styled.button`
   border-radius: 5px;
@@ -33,7 +35,6 @@ function SoundSoundSound({onPlay, name, keyboard}) {
             {name} ({keyboard})
         </LaunchpadButton>
     )
-
 }
 
 // 1 -> q
@@ -44,6 +45,7 @@ function SoundSoundSound({onPlay, name, keyboard}) {
 // 6 -> q,w,e,a,s,d
 // 7 -> q,w,e,r,a,s,d
 // 8 -> q,w,e,a,s,d,z,x
+// 9 -> q,w,e,a,s,d,z,x,c
 const defaultKeyboardMap =
     {
         1: ["q"],
@@ -53,7 +55,8 @@ const defaultKeyboardMap =
         5: ["q", "w", "e", "a", "s"],
         6: ["q", "w", "e", "a", "s", "d"],
         7: ["q", "w", "e", "r", "a", "s", "d"],
-        8: ["q", "w", "e", "a", "s", "d", "z", "x"]
+        8: ["q", "w", "e", "a", "s", "d", "z", "x"],
+        9: ["q", "w", "e", "a", "s", "d", "z", "x", "c"]
     }
 
 const LaunchpadWrapper = styled.div`
@@ -88,19 +91,40 @@ const buildHowlerSpriteObj = (spriteMap) => {
     return sprite;
 }
 
-function App() {
-    const howlerSprite = buildHowlerSpriteObj(Sprite808.spritemap);
-    const keyMap = defaultKeyboardMap[Object.keys(howlerSprite).length]
-    const [play] = useSound(`${process.env.PUBLIC_URL}/drums/808/808sprite.mp3`, {sprite: howlerSprite})
+const drumkits = {
+    "808": {
+        value: "808",
+        url: "/drums/808/808sprite.mp3",
+        title: "808 Drumset",
+        sprite: buildHowlerSpriteObj(Sprite808.spritemap)
+    },
+    "909": {
+        value: "909",
+        url: "/drums/909/909sprite.mp3",
+        title: "909 Drumset",
+        sprite: buildHowlerSpriteObj(Sprite909.spritemap)
+    },
+    "roland": {
+        value: "roland",
+        url: "/drums/rolandtd7/rolandSprite.mp3",
+        title: "Roland TD 7",
+        sprite: buildHowlerSpriteObj(SpriteRoland.spritemap)
+    }
+}
+
+function Launchpad({sprite, url}) {
+    console.log(sprite)
+    const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
+    const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite})
 
     const handleSound = useCallback((event) => {
         const sampleIndex = keyMap.indexOf(event.key)
-        const spriteId = Object.keys(howlerSprite)[sampleIndex]
+        const spriteId = Object.keys(sprite)[sampleIndex]
 
         if (sampleIndex > -1) {
             play({id: spriteId})
         }
-    }, [howlerSprite, keyMap, play]);
+    }, [sprite, keyMap, play]);
 
     useEffect(() => {
         document.addEventListener("keydown", handleSound, false);
@@ -111,16 +135,29 @@ function App() {
     }, [handleSound]);
 
     return (
+        <LaunchpadWrapper>
+            {Object.entries(sprite).map(([k, v], index) => {
+                return <SoundSoundSound key={k}
+                                        name={k}
+                                        keyboard={keyMap[index]}
+                                        onPlay={() => play({id: k})}
+                />
+            })}
+        </LaunchpadWrapper>
+    );
+}
+
+function App() {
+    const [selectedKit, setSelectedKit] = useState("roland")
+
+    return (
         <div className="App">
-            <LaunchpadWrapper>
-                {Object.entries(howlerSprite).map(([k, v], index) => {
-                    return <SoundSoundSound key={k}
-                                            name={k}
-                                            keyboard={keyMap[index]}
-                                            onPlay={() => play({id: k})}
-                    />
+            <select value={selectedKit} onChange={(e) => setSelectedKit(e.target.value)}>
+                {Object.entries(drumkits).map(([drumkitKey, drumkitConfig]) => {
+                    return <option key={drumkitKey} value={drumkitKey}>{drumkitConfig.title}</option>
                 })}
-            </LaunchpadWrapper>
+            </select>
+            <Launchpad {...drumkits[selectedKit]}/>
         </div>
     );
 }
