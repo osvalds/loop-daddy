@@ -1,7 +1,7 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import useSound from "use-sound";
-import Hotkeys from "react-hot-keys"
 import styled from "styled-components"
+import Sprite808 from "./drumkitSprites/808sprite.json"
 
 const LaunchpadButton = styled.button`
   border-radius: 5px;
@@ -11,45 +11,38 @@ const LaunchpadButton = styled.button`
 `
 
 
-function SoundSoundSound({name, url, keyboard}) {
-    const [play] = useSound(`${process.env.PUBLIC_URL + url}`, {interrupt: true})
+function SoundSoundSound({onPlay, name, keyboard}) {
+    // const [play] = useSound(`${process.env.PUBLIC_URL + url}`, {interrupt: true})
     const [isActive, setIsActive] = useState(false)
 
     const onDown = useCallback(() => {
         setIsActive(true)
-        play()
-    }, [setIsActive, play])
+        onPlay()
+    }, [setIsActive, onPlay])
 
 
     return (
-        <Hotkeys keyName={keyboard}
-                 onKeyDown={onDown}
-                 onKeyUp={() => setIsActive(false)}
-        >
-            <LaunchpadButton
-                onMouseDown={onDown}
-                onMouseUp={
-                    () => setIsActive(false)
-                }
-                onTouchStart={onDown}
-                isActive={isActive}
-                onTouchEnd={e => {
-                    e.preventDefault()
-                    setIsActive(false)
-                }}>
-                {name} ({keyboard})
-            </LaunchpadButton>
-        </Hotkeys>)
+        // <Hotkeys keyName={keyboard}
+        //          onKeyDown={onDown}
+        //          onKeyUp={() => setIsActive(false)}
+        // >
+        <LaunchpadButton
+            onMouseDown={onDown}
+            onMouseUp={
+                () => setIsActive(false)
+            }
+            onTouchStart={onDown}
+            isActive={isActive}
+            onTouchEnd={e => {
+                e.preventDefault()
+                setIsActive(false)
+            }}>
+            {name} ({keyboard})
+        </LaunchpadButton>
+        // </Hotkeys>
+    )
 
 }
-
-const sampleKit = [
-    {name: "808-bd02.wav", url: "/drums/808/808-bd02.wav"},
-    {name: "808-bd14.wav", url: "/drums/808/808-bd14.wav"},
-    {name: "808-clap2.wav", url: "/drums/808/808-clap2.wav"},
-    {name: "808-cym01.wav", url: "/drums/808/808-cym01.wav"},
-    {name: "808-hh02.wav", url: "/drums/808/808-hh02.wav"},
-    {name: "808-tme1.wav", url: "/drums/808/808-tme1.wav"}]
 
 // 1 -> q
 // 2 -> q,w
@@ -89,16 +82,70 @@ const LaunchpadWrapper = styled.div`
     & > *:first-child {
         grid-row: 1 / 1;
         grid-column: 1 / 1;
-    } qw
+    } 
 `
 
+const buildHowlerSpriteObj = (spriteMap) => {
+    const spriteArray = Object.entries(spriteMap)
+    const sprite = {}
+
+    for (let [k, v] of spriteArray) {
+        sprite[k] = [v.start * 1000, Math.floor(v.end * 1000)]
+    }
+
+    return sprite;
+}
+
 function App() {
+    const howlerSprite = buildHowlerSpriteObj(Sprite808.spritemap);
+    console.log(howlerSprite)
+    const keyMap = defaultKeyboardMap[Object.keys(howlerSprite).length]
+    const [play] = useSound(`${process.env.PUBLIC_URL}/drums/808/808sprite.mp3`, {sprite: howlerSprite})
+
+    const handleSound = useCallback((event) => {
+        const sampleIndex = keyMap.indexOf(event.key)
+        const spriteId = Object.keys(howlerSprite)[sampleIndex]
+
+
+        if (sampleIndex > -1) {
+            console.log("spriteId", spriteId)
+            play({id: spriteId})
+        }
+    }, [howlerSprite, keyMap, play]);
+
+    useEffect(() => {
+        const handleSound = (event) => {
+            const sampleIndex = keyMap.indexOf(event.key)
+            const spriteId = Object.keys(howlerSprite)[sampleIndex]
+
+
+            if (sampleIndex > -1) {
+                console.log("spriteId", spriteId)
+                play({id: spriteId})
+            }
+        }
+
+        console.log("running")
+        document.addEventListener("keydown", handleSound, false);
+
+        return () => {
+            document.removeEventListener("keydown", handleSound, false)
+        };
+    }, [play]);
+
+    console.log("rendering")
     return (
         <div className="App">
             <LaunchpadWrapper>
-                {sampleKit.map((sample, index) => {
-                    return <SoundSoundSound key={sample.name} {...sample}
-                                            keyboard={defaultKeyboardMap[sampleKit.length][index]}/>
+                {Object.entries(howlerSprite).map(([k, v], index) => {
+                    return <SoundSoundSound key={k}
+                                            name={k}
+                                            keyboard={keyMap[index]}
+                                            // onPlay={() => play({id: k})}
+                                            onPlay={() => {
+                                                return null
+                                            }}
+                    />
                 })}
             </LaunchpadWrapper>
         </div>
