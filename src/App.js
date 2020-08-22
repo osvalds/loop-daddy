@@ -5,6 +5,8 @@ import Sprite808 from "./drumkitSprites/808sprite.json";
 import Sprite909 from "./drumkitSprites/909sprite.json";
 import SpriteRoland from "./drumkitSprites/rolandSprite.json";
 
+import {Sequencer} from "./components/Sequencer";
+
 // 1 -> q
 // 2 -> q,w
 // 3 -> q,w,e
@@ -40,8 +42,7 @@ const buildHowlerSpriteObj = (spriteMap) => {
 
 const drumkits = {
     "808": {
-        value: "808",
-        url: "/drums/808/808sprite.mp3",
+        value: "808", url: "/drums/808/808sprite.mp3",
         title: "808 Drumset",
         sprite: buildHowlerSpriteObj(Sprite808.spritemap)
     },
@@ -115,7 +116,7 @@ const LaunchpadWrapper = styled.div`
 function Launchpad({sprite, url}) {
     const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
     const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite})
-    const [pressedKeys, setPressedKeys]  = useState(new Set())
+    const [pressedKeys, setPressedKeys] = useState(new Set())
 
     const handleSound = useCallback((event) => {
         const sampleIndex = keyMap.indexOf(event.key)
@@ -162,18 +163,25 @@ function Launchpad({sprite, url}) {
     );
 }
 
+const ContentWrapper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`
+
 function App() {
     const [selectedKit, setSelectedKit] = useState("roland")
 
     return (
-        <div className="App">
+        <ContentWrapper>
             <select value={selectedKit} onChange={(e) => setSelectedKit(e.target.value)}>
                 {Object.entries(drumkits).map(([drumkitKey, drumkitConfig]) => {
                     return <option key={drumkitKey} value={drumkitKey}>{drumkitConfig.title}</option>
                 })}
             </select>
             <Launchpad {...drumkits[selectedKit]}/>
-        </div>
+            <Sequencer/>
+        </ContentWrapper>
     );
 }
 
