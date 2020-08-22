@@ -66,7 +66,7 @@ const LaunchpadButton = styled.button`
   filter: ${props => props.isActive ? "hue-rotate(90deg)" : "hue-rotate(0)"}
 `
 
-function SoundSoundSound({onPlay, name, keyboard}) {
+function SoundSoundSound({onPlay, name, keyboard, pressedKey}) {
     const [isActive, setIsActive] = useState(false)
 
     const onDown = useCallback(() => {
@@ -81,7 +81,7 @@ function SoundSoundSound({onPlay, name, keyboard}) {
                 () => setIsActive(false)
             }
             onTouchStart={onDown}
-            isActive={isActive}
+            isActive={pressedKey === keyboard || isActive}
             onTouchEnd={e => {
                 e.preventDefault()
                 setIsActive(false)
@@ -115,29 +115,37 @@ const LaunchpadWrapper = styled.div`
 function Launchpad({sprite, url}) {
     const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
     const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite})
+    const [pressedKey, setPressedKey]  = useState(null)
 
     const handleSound = useCallback((event) => {
         const sampleIndex = keyMap.indexOf(event.key)
         const spriteId = Object.keys(sprite)[sampleIndex]
-
+        setPressedKey(event.key)
         if (sampleIndex > -1) {
             play({id: spriteId})
         }
-    }, [sprite, keyMap, play]);
+    }, [sprite, keyMap, play, setPressedKey]);
+
+    const handleKeyUp = useCallback(() => {
+      setPressedKey(null)
+    }, [setPressedKey])
 
     useEffect(() => {
         document.addEventListener("keydown", handleSound, false);
+        document.addEventListener("keyup", handleKeyUp, false);
 
         return () => {
             document.removeEventListener("keydown", handleSound, false)
+            document.removeEventListener("keyup", handleKeyUp, false)
         };
-    }, [handleSound]);
+    }, [handleSound, handleKeyUp]);
 
     return (
         <LaunchpadWrapper>
             {Object.entries(sprite).map(([k, v], index) => {
                 return <SoundSoundSound key={k}
                                         name={k}
+                                        pressedKey={pressedKey}
                                         keyboard={keyMap[index]}
                                         onPlay={() => play({id: k})}
                 />
