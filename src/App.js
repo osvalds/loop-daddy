@@ -66,9 +66,9 @@ const LaunchpadButton = styled.button`
   filter: ${props => props.isActive ? "hue-rotate(90deg)" : "hue-rotate(0)"}
 `
 
-function SoundSoundSound({onPlay, name, keyboard, pressedKey}) {
+function SoundSoundSound({onPlay, name, keyboard, pressedKeys}) {
     const [isActive, setIsActive] = useState(false)
-
+    // console.log(pressedKeys)
     const onDown = useCallback(() => {
         setIsActive(true)
         onPlay()
@@ -81,7 +81,7 @@ function SoundSoundSound({onPlay, name, keyboard, pressedKey}) {
                 () => setIsActive(false)
             }
             onTouchStart={onDown}
-            isActive={pressedKey === keyboard || isActive}
+            isActive={pressedKeys.has(keyboard) || isActive}
             onTouchEnd={e => {
                 e.preventDefault()
                 setIsActive(false)
@@ -115,20 +115,28 @@ const LaunchpadWrapper = styled.div`
 function Launchpad({sprite, url}) {
     const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
     const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite})
-    const [pressedKey, setPressedKey]  = useState(null)
+    const [pressedKeys, setPressedKeys]  = useState(new Set())
 
     const handleSound = useCallback((event) => {
         const sampleIndex = keyMap.indexOf(event.key)
         const spriteId = Object.keys(sprite)[sampleIndex]
-        setPressedKey(event.key)
+        setPressedKeys(pkeys => {
+            let newPkeys = new Set(pkeys)
+            newPkeys.add(event.key)
+            return newPkeys;
+        })
         if (sampleIndex > -1) {
             play({id: spriteId})
         }
-    }, [sprite, keyMap, play, setPressedKey]);
+    }, [sprite, keyMap, play, setPressedKeys]);
 
-    const handleKeyUp = useCallback(() => {
-      setPressedKey(null)
-    }, [setPressedKey])
+    const handleKeyUp = useCallback((event) => {
+        setPressedKeys(pkeys => {
+            let newPkeys = new Set(pkeys)
+            newPkeys.delete(event.key)
+            return newPkeys
+        })
+    }, [setPressedKeys])
 
     useEffect(() => {
         document.addEventListener("keydown", handleSound, false);
@@ -145,7 +153,7 @@ function Launchpad({sprite, url}) {
             {Object.entries(sprite).map(([k, v], index) => {
                 return <SoundSoundSound key={k}
                                         name={k}
-                                        pressedKey={pressedKey}
+                                        pressedKeys={pressedKeys}
                                         keyboard={keyMap[index]}
                                         onPlay={() => play({id: k})}
                 />
