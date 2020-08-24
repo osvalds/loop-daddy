@@ -180,7 +180,7 @@ function App() {
                 })}
             </select>
             <Launchpad {...drumkits[selectedKit]}/>
-            <Sequencer/>
+            <Sequencer {...drumkits[selectedKit]}/>
         </ContentWrapper>
     );
 }
