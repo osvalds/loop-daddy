@@ -12,7 +12,8 @@ const FULL_TIME_GAP = 4
 const COLUMN_GAP = 3
 const ROW_GAP = 5
 const PAGE_SIZE = 16
-const CONTROLS_WIDTH = 60
+
+const CONTROLS_WIDTH = 100
 
 /**
  * Draws a rounded rectangle using the current state of the canvas.
@@ -73,10 +74,14 @@ const SequencerCanvas = styled.canvas`
     flex: 1;
 `
 
-const drawCell = (ctx) => {
-    // ctx.fillStyle = 1 === 1 ? "#00adb5" : "#393e46";
-    ctx.fillRect(0, 0, 30, 30)
+const drawTrackTitle = (ctx, title, x, y) => {
+    ctx.font = "16px sans-serif";
+    ctx.textBaseline = "middle"
 
+    ctx.fillText(title,
+        x + 1,
+        Math.floor(y)
+    )
 }
 
 const drawSampleTrack = (ctx, trackName, color, trackIndex) => {
@@ -84,6 +89,11 @@ const drawSampleTrack = (ctx, trackName, color, trackIndex) => {
 
     for (let beatIndex = 0; beatIndex < PAGE_SIZE; beatIndex++) {
         const TIME_GAP = FULL_TIME_GAP * Math.floor((beatIndex / 4))
+
+        drawTrackTitle(ctx,
+            trackName,
+            0,
+            SCRUB_HEIGHT + (trackIndex * BEAT_HEIGHT) + (trackIndex * ROW_GAP) + Math.floor(BEAT_HEIGHT / 2))
 
         roundRect(
             ctx,
@@ -107,7 +117,7 @@ const drawTracks = (ctx, sprite) => {
 }
 
 const useSize = (target) => {
-    const [size, setSize] = React.useState()
+    const [size, setSize] = React.useState(null)
 
     React.useLayoutEffect(() => {
         setSize(target.current.getBoundingClientRect())
@@ -118,17 +128,48 @@ const useSize = (target) => {
     return size
 }
 
-export function Sequencer({sprite}) {
+const CanvasWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+`
+
+function SequencerWrapper({size, sprite}) {
     const sequencerRef = useRef(null)
-    const size = useSize(sequencerRef)
+    const scale = window.devicePixelRatio;
+    const {width, height} = size;
+    const w = Math.floor(width * scale)
+    const h = Math.floor(height * scale)
 
     useEffect(() => {
         const ctx = sequencerRef.current.getContext("2d")
+        ctx.scale(scale, scale);
+    }, [])
+
+    useEffect(() => {
+        const ctx = sequencerRef.current.getContext("2d")
+        ctx.clearRect(0, 0, w, h)
         drawTracks(ctx, sprite)
-    })
+    }, [w, h])
 
     return <SequencerCanvas ref={sequencerRef}
-                            width={size?.width}
-                            height={size?.height}
+                            style={{
+                                width: Math.floor(width),
+                                height: Math.floor(height)
+                            }}
+                            width={w}
+                            height={h}
     />
+}
+
+export function Sequencer(props) {
+    const wrapperRef = useRef(null)
+    const size = useSize(wrapperRef)
+
+    return <CanvasWrapper ref={wrapperRef}>
+        {size &&
+        <SequencerWrapper size={size} {...props}/>
+        }
+    </CanvasWrapper>
+
 }
