@@ -134,6 +134,13 @@ const CanvasWrapper = styled.div`
   overflow: hidden;
 `
 
+function getCursorPosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    return {x, y}
+}
+
 function SequencerWrapper({size, sprite}) {
     const sequencerRef = useRef(null)
     const scale = window.devicePixelRatio;
@@ -156,6 +163,9 @@ function SequencerWrapper({size, sprite}) {
                             style={{
                                 width: Math.floor(width),
                                 height: Math.floor(height)
+                            }}
+                            onClick={(e) => {
+                                console.log(getCursorPosition(sequencerRef.current, e))
                             }}
                             width={w}
                             height={h}
