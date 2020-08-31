@@ -8,3 +8,7 @@ export function getRandomColor() {
     let l = randomInt(40, 90);
     return `hsl(${h},${s}%,${l}%)`;
 }
+
+export const mod = (x, m) => {
+    return (x % m + m) % m;
+};

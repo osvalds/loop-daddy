@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import styled from "styled-components"
 import useResizeObserver from "@react-hook/resize-observer";
+import {mod} from "../Sugar";
 
 const SCRUB_HEIGHT = 50
 
@@ -93,7 +94,6 @@ const drawSampleTrack = (ctx, trackName, color, trackIndex) => {
             trackName,
             0,
             SCRUB_HEIGHT + (trackIndex * BEAT_HEIGHT) + (trackIndex * ROW_GAP) + Math.floor(BEAT_HEIGHT / 2))
-
         roundRect(
             ctx,
             CONTROLS_WIDTH + (beatIndex * BEAT_WIDTH) + (beatIndex * COLUMN_GAP) + TIME_GAP,
@@ -162,22 +162,43 @@ function SequencerWrapper({size, sprite}) {
     }
 
     const canvasClickCoordsToClickedBeat = (canvas, event) => {
+        // relative cursor position to Canvas element
         const {x, y} = getCursorPosition(canvas, event);
 
-        for (let i = 0; i < PAGE_SIZE; i++) {
-            const TIME_GAP = FULL_TIME_GAP * Math.floor((i / 4))
-            for (let j = 0, jl = Object.entries(sprite).length; j < jl; j++) {
-                const x0 = CONTROLS_WIDTH + (i * BEAT_WIDTH) + (i * COLUMN_GAP) + TIME_GAP
-                const y0 = SCRUB_HEIGHT + (j * BEAT_HEIGHT) + (j * ROW_GAP)
+        const fourBeatSectionWidth = ((4 * (BEAT_WIDTH + COLUMN_GAP)) + FULL_TIME_GAP)
 
-                if (isInRange(x, x0, x0 + BEAT_WIDTH) &&
-                    isInRange(y, y0, y0 + BEAT_HEIGHT)) {
-                    return [i, j]
-                }
-            }
+        const trackHeight = BEAT_HEIGHT + ROW_GAP
+
+        // Transform click position to where tracks are rendered
+        const cX0 = x - CONTROLS_WIDTH;
+        const cY0 = y - SCRUB_HEIGHT;
+
+        if (cX0 < 0 || cY0 < 0) {
+            return null
         }
 
-        return null
+        // get which subgrid was clicked on
+        const subgridX = Math.floor(cX0 / fourBeatSectionWidth)
+        // get which box in the subgrid was clicked on, capping at 3 so there are no weird overflowing things
+        const positionInSubgrid = Math.min(Math.floor(mod(cX0, fourBeatSectionWidth)/ (BEAT_WIDTH + COLUMN_GAP)), 3)
+        // this is the potential coords for the clicked box but we want to check if the user
+        // hasn't clicked/dragged on a space around the box (which are included in the calculations)
+        const proposedX = subgridX * 4 + positionInSubgrid;
+        // it's much simpler for the Y dimension
+        const proposedY = Math.floor(cY0 / trackHeight)
+
+
+        // Validate if proposed index matches with how the boxes are drawn on the screen
+        // If the click position matches with the position of where boxes are being drawn,
+        // return the proposed position
+        const x0 = CONTROLS_WIDTH + (proposedX * BEAT_WIDTH) + (proposedX * COLUMN_GAP) + FULL_TIME_GAP * subgridX
+        const y0 = SCRUB_HEIGHT + (proposedY * BEAT_HEIGHT) + (proposedY * ROW_GAP)
+        if (isInRange(x, x0, x0 + BEAT_WIDTH) &&
+            isInRange(y, y0, y0 + BEAT_HEIGHT)) {
+            return [proposedX, proposedY]
+        } else {
+            return null
+        }
     }
 
     return <SequencerCanvas ref={sequencerRef}
@@ -191,7 +212,7 @@ function SequencerWrapper({size, sprite}) {
                             }}
                             onMouseMove={(e) => {
                                 if (e.buttons === 1) {
-                                    console.log("dragging", canvasClickCoordsToClickedBeat(sequencerRef.current, e))
+                                    console.log(canvasClickCoordsToClickedBeat(sequencerRef.current, e))
                                 }
                             }}
                             width={w}
