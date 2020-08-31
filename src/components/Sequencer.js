@@ -1,17 +1,16 @@
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import styled from "styled-components"
 import useResizeObserver from "@react-hook/resize-observer";
-import {getRandomColor} from "../Sugar";
 
 const SCRUB_HEIGHT = 50
 
 const BEAT_HEIGHT = 50
 const BEAT_WIDTH = 40
 
-const FULL_TIME_GAP = 4
-const COLUMN_GAP = 3
-const ROW_GAP = 5
-const PAGE_SIZE = 16
+const FULL_TIME_GAP = 20
+const COLUMN_GAP = 10
+const ROW_GAP = 8
+const PAGE_SIZE = 32
 
 const CONTROLS_WIDTH = 100
 
@@ -158,13 +157,42 @@ function SequencerWrapper({size, sprite}) {
         drawTracks(ctx, sprite)
     }, [w, h])
 
+    const isInRange = (x, xmin, xmax) => {
+        return xmin <= x && x <= xmax
+    }
+
+    const canvasClickCoordsToClickedBeat = (canvas, event) => {
+        const {x, y} = getCursorPosition(canvas, event);
+
+        for (let i = 0; i < PAGE_SIZE; i++) {
+            const TIME_GAP = FULL_TIME_GAP * Math.floor((i / 4))
+            for (let j = 0, jl = Object.entries(sprite).length; j < jl; j++) {
+                const x0 = CONTROLS_WIDTH + (i * BEAT_WIDTH) + (i * COLUMN_GAP) + TIME_GAP
+                const y0 = SCRUB_HEIGHT + (j * BEAT_HEIGHT) + (j * ROW_GAP)
+
+                if (isInRange(x, x0, x0 + BEAT_WIDTH) &&
+                    isInRange(y, y0, y0 + BEAT_HEIGHT)) {
+                    return [i, j]
+                }
+            }
+        }
+
+        return null
+    }
+
     return <SequencerCanvas ref={sequencerRef}
                             style={{
                                 width: Math.floor(width),
                                 height: Math.floor(height)
                             }}
                             onClick={(e) => {
-                                console.log(getCursorPosition(sequencerRef.current, e))
+                                console.log(canvasClickCoordsToClickedBeat(sequencerRef.current, e))
+                                // console.log(getCursorPosition(sequencerRef.current, e))
+                            }}
+                            onMouseMove={(e) => {
+                                if (e.buttons === 1) {
+                                    console.log("dragging", canvasClickCoordsToClickedBeat(sequencerRef.current, e))
+                                }
                             }}
                             width={w}
                             height={h}
@@ -174,6 +202,7 @@ function SequencerWrapper({size, sprite}) {
 export function Sequencer(props) {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
+    const [sequence, setSequence] = useState(Array(PAGE_SIZE).fill([]))
 
     return <CanvasWrapper ref={wrapperRef}>
         {size &&
