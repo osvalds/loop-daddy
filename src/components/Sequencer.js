@@ -109,9 +109,8 @@ const drawSampleTrack = (ctx, trackName, color, trackIndex) => {
 const drawTracks = (ctx, sprite) => {
     let i = 0;
 
-    for (let name of Object.keys(sprite)) {
-        let color = get_random_color()
-        drawSampleTrack(ctx, name, color, i)
+    for (let [name, v] of Object.entries(sprite)) {
+        drawSampleTrack(ctx, name, v.color, i)
         i++;
     }
 }

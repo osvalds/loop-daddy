@@ -6,6 +6,7 @@ import Sprite909 from "./drumkitSprites/909sprite.json";
 import SpriteRoland from "./drumkitSprites/rolandSprite.json";
 
 import {Sequencer} from "./components/Sequencer";
+import {get_random_color} from "./Sugar";
 
 // 1 -> q
 // 2 -> q,w
@@ -34,9 +35,12 @@ const buildHowlerSpriteObj = (spriteMap) => {
     const sprite = {}
 
     for (let [k, v] of spriteArray) {
-        sprite[k] = [v.start * 1000, (v.end - v.start) * 1000]
+        sprite[k] = {
+            coords: [v.start * 1000, (v.end - v.start) * 1000],
+            color: get_random_color()
+        }
     }
-
+    console.log(sprite);
     return sprite;
 }
 
@@ -81,6 +85,7 @@ function SoundSoundSound({onPlay, name, keyboard, pressedKeys}) {
             onMouseUp={
                 () => setIsActive(false)
             }
+            onMouseLeave={() => setIsActive(false)}
             onTouchStart={onDown}
             isActive={pressedKeys.has(keyboard) || isActive}
             onTouchEnd={e => {
@@ -113,9 +118,20 @@ const LaunchpadWrapper = styled.div`
     } 
 `
 
+const LoopDaddyToUseSound = (sprite) => {
+    const spriteArray = Object.entries(sprite)
+    const s = {}
+
+    for (let [k, v] of spriteArray) {
+        s[k] = v.coords
+    }
+
+    return s;
+}
+
 function Launchpad({sprite, url}) {
     const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
-    const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite})
+    const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite: LoopDaddyToUseSound(sprite)})
     const [pressedKeys, setPressedKeys] = useState(new Set())
 
     const handleSound = useCallback((event) => {
@@ -126,6 +142,7 @@ function Launchpad({sprite, url}) {
             newPkeys.add(event.key)
             return newPkeys;
         })
+
         if (sampleIndex > -1) {
             play({id: spriteId})
         }
