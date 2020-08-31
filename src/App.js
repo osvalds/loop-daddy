@@ -6,7 +6,7 @@ import Sprite909 from "./drumkitSprites/909sprite.json";
 import SpriteRoland from "./drumkitSprites/rolandSprite.json";
 
 import {Sequencer} from "./components/Sequencer";
-import {get_random_color} from "./Sugar";
+import {getRandomColor} from "./Sugar";
 
 // 1 -> q
 // 2 -> q,w
@@ -37,10 +37,10 @@ const buildHowlerSpriteObj = (spriteMap) => {
     for (let [k, v] of spriteArray) {
         sprite[k] = {
             coords: [v.start * 1000, (v.end - v.start) * 1000],
-            color: get_random_color()
+            color: getRandomColor()
         }
     }
-    console.log(sprite);
+
     return sprite;
 }
 
@@ -71,9 +71,9 @@ const LaunchpadButton = styled.button`
   filter: ${props => props.isActive ? "hue-rotate(90deg)" : "hue-rotate(0)"}
 `
 
+// TILL THE DAY I DIE
 function SoundSoundSound({onPlay, name, keyboard, pressedKeys}) {
     const [isActive, setIsActive] = useState(false)
-    // console.log(pressedKeys)
     const onDown = useCallback(() => {
         setIsActive(true)
         onPlay()
@@ -85,6 +85,7 @@ function SoundSoundSound({onPlay, name, keyboard, pressedKeys}) {
             onMouseUp={
                 () => setIsActive(false)
             }
+            // don't store the active state if mouse is dragged outside
             onMouseLeave={() => setIsActive(false)}
             onTouchStart={onDown}
             isActive={pressedKeys.has(keyboard) || isActive}
@@ -131,6 +132,8 @@ const LoopDaddyToUseSound = (sprite) => {
 
 function Launchpad({sprite, url}) {
     const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
+    // Sprite config must be an object like: {TIMPANI: [0, 350], PLINK: [450, 985.43]}
+    console.log(sprite);
     const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite: LoopDaddyToUseSound(sprite)})
     const [pressedKeys, setPressedKeys] = useState(new Set())
 

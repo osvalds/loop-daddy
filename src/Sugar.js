@@ -1,3 +1,10 @@
-export function get_random_color() {
-    return '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6)
+export function getRandomColor() {
+    const randomInt = (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    let h = randomInt(0, 360);
+    let s = randomInt(42, 98);
+    let l = randomInt(40, 90);
+    return `hsl(${h},${s}%,${l}%)`;
 }

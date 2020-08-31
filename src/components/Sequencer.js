@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import styled from "styled-components"
 import useResizeObserver from "@react-hook/resize-observer";
-import {get_random_color} from "../Sugar";
+import {getRandomColor} from "../Sugar";
 
 const SCRUB_HEIGHT = 50
 
