@@ -84,15 +84,14 @@ const drawTrackTitle = (ctx, title, x, y) => {
     )
 }
 
-const drawSampleTrack = (ctx, trackName, color, trackIndex, sequence) => {
-    for (let beatIndex = 0, sequenceLenght = sequence.length; beatIndex < sequenceLenght; beatIndex++) {
-        const isBeatActive = sequence[trackIndex].indexOf(trackName) > -1
+const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence) => {
+    for (let beatIndex = 0, seqLen = sequence.length; beatIndex < seqLen; beatIndex++) {
+        const isBeatActive = sequence[beatIndex].has(trackName)
 
         const TIME_GAP = FULL_TIME_GAP * Math.floor((beatIndex / 4))
         const [selectedColor, unselectedColor] = color
-        console.log(color)
 
-        ctx.fillStyle = isBeatActive? selectedColor : unselectedColor;
+        ctx.fillStyle = isBeatActive ? selectedColor : unselectedColor;
 
         drawTrackTitle(ctx,
             trackName,
@@ -114,7 +113,7 @@ const drawTracks = (ctx, sprite, sequence) => {
 
     // sprite entries are the tracks (e.g. castanets, timpani, plink etc.
     for (let [name, v] of Object.entries(sprite)) {
-        drawSampleTrack(ctx, name, v.color, i, sequence)
+        drawSingleTrack(ctx, name, v.color, i, sequence)
         i++;
     }
 }
@@ -209,13 +208,45 @@ function SequencerWrapper({size, sprite, useSequence}) {
         drawTracks(ctx, sprite, sequence)
     }, [w, h, sprite, sequence])
 
+    const getClickedTrack = ([x, y]) => {
+        const spriteArray = Object.entries(sprite)
+
+        if (y > spriteArray.length) {
+            return null
+        } else {
+            return spriteArray[y][0]
+        }
+    }
+
+    const handleClickingOnCanvas = (canvasNode, evt) => {
+        const clickedBeat = canvasClickCoordsToClickedBeat(canvasNode, evt)
+        if (clickedBeat !== null) {
+            const trackName = getClickedTrack(clickedBeat)
+            const [x, y] = clickedBeat
+            //@TODO this seems smelly
+            if (trackName) {
+                let newSequence = [...sequence];
+                const isBeatActive = newSequence[x].has(trackName)
+                const newSet = new Set(newSequence[x])
+                if (isBeatActive) {
+                    newSet.delete(trackName)
+                } else {
+                    newSet.add(trackName)
+                }
+                newSequence[x] = newSet
+                setSequence(newSequence)
+            }
+        }
+    }
+
     return <SequencerCanvas ref={sequencerRef}
                             style={{
                                 width: Math.floor(width),
                                 height: Math.floor(height)
                             }}
                             onClick={(e) => {
-                                console.log(canvasClickCoordsToClickedBeat(sequencerRef.current, e))
+                                handleClickingOnCanvas(sequencerRef.current, e)
+                                // console.log()
                                 // console.log(getCursorPosition(sequencerRef.current, e))
                             }}
                             onMouseMove={(e) => {
@@ -231,7 +262,7 @@ function SequencerWrapper({size, sprite, useSequence}) {
 export function Sequencer(props) {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
-    const useSequence = useState(Array(PAGE_SIZE).fill([]))
+    const useSequence = useState(Array(PAGE_SIZE).fill(new Set()))
 
     return <CanvasWrapper ref={wrapperRef}>
         {size &&
