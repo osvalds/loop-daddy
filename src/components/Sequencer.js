@@ -71,7 +71,6 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
 
 
 const SequencerCanvas = styled.canvas`
-    border: 1px solid red;
     flex: 1;
 `
 
@@ -86,6 +85,19 @@ const drawTrackTitle = (ctx, title, x, y) => {
     )
 }
 
+const getActiveGradient = (ctx, x0, y0, lighterColor, darkerColor) => {
+    const r0 = 5
+    const r1 = 60
+    const x1 = x0
+    const y1 = y0
+    let gradient = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+
+    gradient.addColorStop(.1, lighterColor)
+    gradient.addColorStop(.6, darkerColor)
+
+    return gradient
+}
+
 const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence) => {
     drawTrackTitle(ctx,
         trackName,
@@ -96,14 +108,23 @@ const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence) => {
         const isBeatActive = sequence[beatIndex].has(trackName)
 
         const TIME_GAP = FULL_TIME_GAP * Math.floor((beatIndex / 4))
-        const [selectedColor, unselectedColor] = color
+        const [darkerColor, lighterColor] = color
 
-        ctx.fillStyle = isBeatActive ? selectedColor : unselectedColor;
+        const beatX0 = CONTROLS_WIDTH + (beatIndex * BEAT_WIDTH) + (beatIndex * COLUMN_GAP) + TIME_GAP
+        const beatY0 = SCRUB_HEIGHT + (trackIndex * BEAT_HEIGHT) + (trackIndex * ROW_GAP)
+
+        ctx.fillStyle = isBeatActive ?
+            getActiveGradient(ctx,
+                beatX0 + BEAT_WIDTH / 2,
+                beatY0 + BEAT_HEIGHT / 2,
+                lighterColor,
+                darkerColor) :
+            darkerColor;
 
         roundRect(
             ctx,
-            CONTROLS_WIDTH + (beatIndex * BEAT_WIDTH) + (beatIndex * COLUMN_GAP) + TIME_GAP,
-            SCRUB_HEIGHT + (trackIndex * BEAT_HEIGHT) + (trackIndex * ROW_GAP),
+            beatX0,
+            beatY0,
             BEAT_WIDTH,
             BEAT_HEIGHT,
             5,
