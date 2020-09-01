@@ -75,11 +75,11 @@ const SequencerCanvas = styled.canvas`
 `
 
 const drawTrackTitle = (ctx, title, x, y) => {
-    ctx.font = "16px sans-serif";
+    ctx.font = "16px serif";
     ctx.textBaseline = "middle"
 
     ctx.fillText(title,
-        x + 1,
+        Math.floor(x + 1),
         Math.floor(y)
     )
 }
@@ -149,8 +149,9 @@ const isInRange = (x, xmin, xmax) => {
     return xmin <= x && x <= xmax
 }
 
-// @TODO fix clicking on the bottom of the sequencer
-const canvasClickCoordsToClickedBeat = (canvas, event) => {
+// @TODO potential issues with this handling only x axis, tracks are
+// handled in a separte function
+const canvasClickCoordsToClickedBeat = (canvas, event, sequence) => {
     // relative cursor position to Canvas element
     const {x, y} = getCursorPosition(canvas, event);
 
@@ -162,6 +163,7 @@ const canvasClickCoordsToClickedBeat = (canvas, event) => {
     const cX0 = x - CONTROLS_WIDTH;
     const cY0 = y - SCRUB_HEIGHT;
 
+    // click happened in the controls/scrubber
     if (cX0 < 0 || cY0 < 0) {
         return null
     }
@@ -182,8 +184,10 @@ const canvasClickCoordsToClickedBeat = (canvas, event) => {
     // return the proposed position
     const x0 = CONTROLS_WIDTH + (proposedX * BEAT_WIDTH) + (proposedX * COLUMN_GAP) + FULL_TIME_GAP * subgridX
     const y0 = SCRUB_HEIGHT + (proposedY * BEAT_HEIGHT) + (proposedY * ROW_GAP)
+
     if (isInRange(x, x0, x0 + BEAT_WIDTH) &&
-        isInRange(y, y0, y0 + BEAT_HEIGHT)) {
+        isInRange(y, y0, y0 + BEAT_HEIGHT) &&
+        proposedX < sequence.length) {
         return [proposedX, proposedY]
     } else {
         return null
@@ -221,8 +225,8 @@ function SequencerWrapper({size, sprite, useSequence}) {
         }
     }
 
-    const handleClickingOnCanvas = (canvasNode, evt) => {
-        const clickedBeat = canvasClickCoordsToClickedBeat(canvasNode, evt)
+    const handleMouseOnCanvas = (canvasNode, evt) => {
+        const clickedBeat = canvasClickCoordsToClickedBeat(canvasNode, evt, sequence)
         if (clickedBeat !== null) {
             const trackName = getClickedTrack(clickedBeat)
             const [x, y] = clickedBeat
@@ -257,18 +261,18 @@ function SequencerWrapper({size, sprite, useSequence}) {
                             onClick={(e) => {
                             }}
                             onMouseMove={(e) => {
-                                const current = canvasClickCoordsToClickedBeat(sequencerRef.current, e)
+                                const current = canvasClickCoordsToClickedBeat(sequencerRef.current, e, sequence)
                                 if (e.buttons === 1 && !onSameBeat(lastDraggedBeat, current)) {
-                                    handleClickingOnCanvas(sequencerRef.current, e)
+                                    handleMouseOnCanvas(sequencerRef.current, e)
                                     setLastDraggedBeat(current)
                                     e.preventDefault()
                                 }
                             }}
                             onMouseUp={(e) => {
-                                const current = canvasClickCoordsToClickedBeat(sequencerRef.current, e)
+                                const current = canvasClickCoordsToClickedBeat(sequencerRef.current, e, sequence)
 
                                 if (!onSameBeat(lastDraggedBeat, current)) {
-                                    handleClickingOnCanvas(sequencerRef.current, e)
+                                    handleMouseOnCanvas(sequencerRef.current, e)
                                 }
                                 setLastDraggedBeat(null)
                             }}
