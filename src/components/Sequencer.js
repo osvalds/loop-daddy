@@ -91,12 +91,14 @@ const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence) => {
         const TIME_GAP = FULL_TIME_GAP * Math.floor((beatIndex / 4))
         const [selectedColor, unselectedColor] = color
 
-        ctx.fillStyle = isBeatActive ? selectedColor : unselectedColor;
 
+        ctx.fillStyle = "black";
         drawTrackTitle(ctx,
             trackName,
             0,
             SCRUB_HEIGHT + (trackIndex * BEAT_HEIGHT) + (trackIndex * ROW_GAP) + Math.floor(BEAT_HEIGHT / 2))
+
+        ctx.fillStyle = isBeatActive ? selectedColor : unselectedColor;
         roundRect(
             ctx,
             CONTROLS_WIDTH + (beatIndex * BEAT_WIDTH) + (beatIndex * COLUMN_GAP) + TIME_GAP,
@@ -190,6 +192,7 @@ const canvasClickCoordsToClickedBeat = (canvas, event) => {
 
 function SequencerWrapper({size, sprite, useSequence}) {
     const [sequence, setSequence] = useSequence
+    const [lastDraggedBeat, setLastDraggedBeat] = useState(null)
     const sequencerRef = useRef(null)
     const scale = window.devicePixelRatio;
     const {width, height} = size;
@@ -211,7 +214,7 @@ function SequencerWrapper({size, sprite, useSequence}) {
     const getClickedTrack = ([x, y]) => {
         const spriteArray = Object.entries(sprite)
 
-        if (y > spriteArray.length) {
+        if (y >= spriteArray.length) {
             return null
         } else {
             return spriteArray[y][0]
@@ -238,6 +241,13 @@ function SequencerWrapper({size, sprite, useSequence}) {
             }
         }
     }
+    const onSameBeat = (last, current) => {
+        if (last === null || current === null) {
+            return null
+        } else {
+            return last[0] === current[0] && last[1] === current[1]
+        }
+    }
 
     return <SequencerCanvas ref={sequencerRef}
                             style={{
@@ -245,14 +255,22 @@ function SequencerWrapper({size, sprite, useSequence}) {
                                 height: Math.floor(height)
                             }}
                             onClick={(e) => {
-                                handleClickingOnCanvas(sequencerRef.current, e)
-                                // console.log()
-                                // console.log(getCursorPosition(sequencerRef.current, e))
                             }}
                             onMouseMove={(e) => {
-                                if (e.buttons === 1) {
-                                    console.log(canvasClickCoordsToClickedBeat(sequencerRef.current, e))
+                                const current = canvasClickCoordsToClickedBeat(sequencerRef.current, e)
+                                if (e.buttons === 1 && !onSameBeat(lastDraggedBeat, current)) {
+                                    handleClickingOnCanvas(sequencerRef.current, e)
+                                    setLastDraggedBeat(current)
+                                    e.preventDefault()
                                 }
+                            }}
+                            onMouseUp={(e) => {
+                                const current = canvasClickCoordsToClickedBeat(sequencerRef.current, e)
+
+                                if (!onSameBeat(lastDraggedBeat, current)) {
+                                    handleClickingOnCanvas(sequencerRef.current, e)
+                                }
+                                setLastDraggedBeat(null)
                             }}
                             width={w}
                             height={h}

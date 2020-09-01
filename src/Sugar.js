@@ -6,7 +6,7 @@ export function getRandomColor() {
 
     let h = randomInt(0, 360);
     let s = randomInt(42, 98);
-    let l = randomInt(40, 80);
+    let l = randomInt(30, 50);
     return [`hsl(${h},${s}%,${l}%)`, `hsl(${h},${s}%,${90}%)`];
 
 }
