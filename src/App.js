@@ -185,6 +185,7 @@ function Launchpad({sprite, url}) {
 const ContentWrapper = styled.div`
   height: 100%;
   display: flex;
+  background-color: #242525;
   flex-direction: column;
 `
 

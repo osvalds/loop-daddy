@@ -76,7 +76,7 @@ const SequencerCanvas = styled.canvas`
 `
 
 const drawTrackTitle = (ctx, title, x, y) => {
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "white";
     ctx.font = "16px sans-serif";
     ctx.textBaseline = "middle"
 
@@ -210,9 +210,9 @@ function SequencerWrapper({size, sprite, useSequence}) {
     }, [])
 
     useEffect(() => {
-        console.log("drawing tracks")
         const ctx = sequencerRef.current.getContext("2d")
-        ctx.clearRect(0, 0, w, h)
+        ctx.fillStyle = "#070707"
+        ctx.fillRect(0, 0, w, h)
         drawTracks(ctx, sprite, sequence)
     }, [w, h, sprite, sequence])
 
@@ -315,12 +315,16 @@ const TempoWrapper = styled.div`
   flex: 1 0 auto;
 `
 
+const TempoLabel = styled.div`
+  color: white;
+`
+
 function TempoControls({useTempo}) {
     const [tempo] = useTempo;
 
     return (
         <TempoWrapper>
-            <div>tempo: {tempo}</div>
+            <TempoLabel>Tempo: {tempo}</TempoLabel>
             <HorizontalSlider useValue={useTempo}/>
         </TempoWrapper>
     )
@@ -349,6 +353,8 @@ export function Sequencer(props) {
         {size &&
         <SequencerWrapper size={size}
                           {...props}
+                          isPlaying={isPlaying}
+                          playingBeatIndex={playingBeatIndex}
                           useSequence={useSequence}/>
         }
     </CanvasWrapper>
