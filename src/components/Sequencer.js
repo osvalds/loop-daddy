@@ -75,7 +75,8 @@ const SequencerCanvas = styled.canvas`
 `
 
 const drawTrackTitle = (ctx, title, x, y) => {
-    ctx.font = "16px serif";
+    ctx.fillStyle = "black";
+    ctx.font = "16px sans-serif";
     ctx.textBaseline = "middle"
 
     ctx.fillText(title,
@@ -85,20 +86,19 @@ const drawTrackTitle = (ctx, title, x, y) => {
 }
 
 const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence) => {
+    drawTrackTitle(ctx,
+        trackName,
+        0,
+        SCRUB_HEIGHT + (trackIndex * BEAT_HEIGHT) + (trackIndex * ROW_GAP) + Math.floor(BEAT_HEIGHT / 2))
+
     for (let beatIndex = 0, seqLen = sequence.length; beatIndex < seqLen; beatIndex++) {
         const isBeatActive = sequence[beatIndex].has(trackName)
 
         const TIME_GAP = FULL_TIME_GAP * Math.floor((beatIndex / 4))
         const [selectedColor, unselectedColor] = color
 
-
-        ctx.fillStyle = "black";
-        drawTrackTitle(ctx,
-            trackName,
-            0,
-            SCRUB_HEIGHT + (trackIndex * BEAT_HEIGHT) + (trackIndex * ROW_GAP) + Math.floor(BEAT_HEIGHT / 2))
-
         ctx.fillStyle = isBeatActive ? selectedColor : unselectedColor;
+
         roundRect(
             ctx,
             CONTROLS_WIDTH + (beatIndex * BEAT_WIDTH) + (beatIndex * COLUMN_GAP) + TIME_GAP,
