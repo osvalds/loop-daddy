@@ -6,7 +6,6 @@ const sliderStyle = {
     position: 'relative',
     width: '100%',
     height: "42px",
-    marginTop: "12px",
     touchAction: 'none',
 };
 

@@ -20,6 +20,7 @@ const railOuterStyle = {
 
 const railInnerStyle = {
     position: 'absolute',
+    top: "50%",
     width: '100%',
     height: 14,
     transform: 'translate(0%, -50%)',
@@ -56,6 +57,8 @@ export const Handle = ({
                     left: `${percent}%`,
                     position: 'absolute',
                     transform: 'translate(-50%, -50%)',
+                    top: "50%",
+
                     WebkitTapHighlightColor: 'rgba(0,0,0,0)',
                     zIndex: 5,
                     width: 28,
@@ -74,6 +77,8 @@ export const Handle = ({
                     left: `${percent}%`,
                     position: 'absolute',
                     transform: 'translate(-50%, -50%)',
+                    top: "50%",
+
                     zIndex: 2,
                     width: 24,
                     height: 24,
@@ -134,6 +139,7 @@ export const Track = ({
             style={{
                 position: 'absolute',
                 transform: 'translate(0%, -50%)',
+                top: "50%",
                 height: 14,
                 zIndex: 1,
                 backgroundColor: disabled ? '#999' : '#607E9E',
