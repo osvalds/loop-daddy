@@ -296,6 +296,7 @@ function StartPause({useIsPlaying}) {
 
 const TempoWrapper = styled.div`
   max-width: 300px;
+  flex: 1 0 auto;
 `
 
 function TempoControls({useTempo}) {
@@ -309,6 +310,11 @@ function TempoControls({useTempo}) {
     )
 }
 
+const ControlsWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
 export function Sequencer(props) {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
@@ -319,8 +325,11 @@ export function Sequencer(props) {
     const [playingBeatIndex, setPlayingBeatIndex] = useState(0)
 
     return <CanvasWrapper ref={wrapperRef}>
-        <TempoControls useTempo={[tempo, setTempo]}/>
-        <StartPause useIsPlaying={[isPlaying, setIsPlaying]}/>
+        <ControlsWrapper>
+            <TempoControls useTempo={[tempo, setTempo]}/>
+            <StartPause useIsPlaying={[isPlaying, setIsPlaying]}/>
+        </ControlsWrapper>
+
         {size &&
         <SequencerWrapper size={size}
                           {...props}
