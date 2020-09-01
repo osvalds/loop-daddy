@@ -281,12 +281,29 @@ function SequencerWrapper({size, sprite, useSequence}) {
     />
 }
 
+const PrimaryButton = styled.button`
+  font-size: 20px;
+  padding: 4px 12px;
+`
+
+function StartPause({useIsPlaying}) {
+    const [isPlaying, setIsPlaying] = useIsPlaying
+    return <PrimaryButton onClick={() => setIsPlaying(p => !p)}>
+        {isPlaying ? "pause" : "Play"}
+    </PrimaryButton>
+}
+
 export function Sequencer(props) {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
     const useSequence = useState(Array(PAGE_SIZE).fill(new Set()))
+    const [isPlaying, setIsPlaying] = useState(false)
+
+    const [tempo, setTempo] = useState(120)
+    const [playingBeatIndex, setPlayingBeatIndex] = useState(0)
 
     return <CanvasWrapper ref={wrapperRef}>
+        <StartPause useIsPlaying={[isPlaying, setIsPlaying]}/>
         {size &&
         <SequencerWrapper size={size}
                           {...props}

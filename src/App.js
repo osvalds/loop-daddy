@@ -189,7 +189,7 @@ const ContentWrapper = styled.div`
 `
 
 function App() {
-    const [selectedKit, setSelectedKit] = useState("roland")
+    const [selectedKit, setSelectedKit] = useState("808")
 
     return (
         <ContentWrapper>
