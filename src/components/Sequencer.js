@@ -84,11 +84,15 @@ const drawTrackTitle = (ctx, title, x, y) => {
     )
 }
 
-const drawSampleTrack = (ctx, trackName, color, trackIndex) => {
-    ctx.fillStyle = color;
+const drawSampleTrack = (ctx, trackName, color, trackIndex, sequence) => {
+    for (let beatIndex = 0, sequenceLenght = sequence.length; beatIndex < sequenceLenght; beatIndex++) {
+        const isBeatActive = sequence[trackIndex].indexOf(trackName) > -1
 
-    for (let beatIndex = 0; beatIndex < PAGE_SIZE; beatIndex++) {
         const TIME_GAP = FULL_TIME_GAP * Math.floor((beatIndex / 4))
+        const [selectedColor, unselectedColor] = color
+        console.log(color)
+
+        ctx.fillStyle = isBeatActive? selectedColor : unselectedColor;
 
         drawTrackTitle(ctx,
             trackName,
@@ -105,11 +109,12 @@ const drawSampleTrack = (ctx, trackName, color, trackIndex) => {
     }
 }
 
-const drawTracks = (ctx, sprite) => {
+const drawTracks = (ctx, sprite, sequence) => {
     let i = 0;
 
+    // sprite entries are the tracks (e.g. castanets, timpani, plink etc.
     for (let [name, v] of Object.entries(sprite)) {
-        drawSampleTrack(ctx, name, v.color, i)
+        drawSampleTrack(ctx, name, v.color, i, sequence)
         i++;
     }
 }
@@ -139,7 +144,53 @@ function getCursorPosition(canvas, event) {
     return {x, y}
 }
 
-function SequencerWrapper({size, sprite}) {
+const isInRange = (x, xmin, xmax) => {
+    return xmin <= x && x <= xmax
+}
+
+// @TODO fix clicking on the bottom of the sequencer
+const canvasClickCoordsToClickedBeat = (canvas, event) => {
+    // relative cursor position to Canvas element
+    const {x, y} = getCursorPosition(canvas, event);
+
+    const fourBeatSectionWidth = ((4 * (BEAT_WIDTH + COLUMN_GAP)) + FULL_TIME_GAP)
+
+    const trackHeight = BEAT_HEIGHT + ROW_GAP
+
+    // Transform click position to where tracks are rendered
+    const cX0 = x - CONTROLS_WIDTH;
+    const cY0 = y - SCRUB_HEIGHT;
+
+    if (cX0 < 0 || cY0 < 0) {
+        return null
+    }
+
+    // get which subgrid was clicked on
+    const subgridX = Math.floor(cX0 / fourBeatSectionWidth)
+    // get which box in the subgrid was clicked on, capping at 3 so there are no weird overflowing things
+    const positionInSubgrid = Math.min(Math.floor(mod(cX0, fourBeatSectionWidth) / (BEAT_WIDTH + COLUMN_GAP)), 3)
+    // this is the potential coords for the clicked box but we want to check if the user
+    // hasn't clicked/dragged on a space around the box (which are included in the calculations)
+    const proposedX = subgridX * 4 + positionInSubgrid;
+    // it's much simpler for the Y dimension
+    const proposedY = Math.floor(cY0 / trackHeight)
+
+
+    // Validate if proposed index matches with how the boxes are drawn on the screen
+    // If the click position matches with the position of where boxes are being drawn,
+    // return the proposed position
+    const x0 = CONTROLS_WIDTH + (proposedX * BEAT_WIDTH) + (proposedX * COLUMN_GAP) + FULL_TIME_GAP * subgridX
+    const y0 = SCRUB_HEIGHT + (proposedY * BEAT_HEIGHT) + (proposedY * ROW_GAP)
+    if (isInRange(x, x0, x0 + BEAT_WIDTH) &&
+        isInRange(y, y0, y0 + BEAT_HEIGHT)) {
+        return [proposedX, proposedY]
+    } else {
+        return null
+    }
+}
+
+function SequencerWrapper({size, sprite, useSequence}) {
+    const [sequence, setSequence] = useSequence
     const sequencerRef = useRef(null)
     const scale = window.devicePixelRatio;
     const {width, height} = size;
@@ -152,54 +203,11 @@ function SequencerWrapper({size, sprite}) {
     }, [])
 
     useEffect(() => {
+        console.log("drawing tracks")
         const ctx = sequencerRef.current.getContext("2d")
         ctx.clearRect(0, 0, w, h)
-        drawTracks(ctx, sprite)
-    }, [w, h])
-
-    const isInRange = (x, xmin, xmax) => {
-        return xmin <= x && x <= xmax
-    }
-
-    const canvasClickCoordsToClickedBeat = (canvas, event) => {
-        // relative cursor position to Canvas element
-        const {x, y} = getCursorPosition(canvas, event);
-
-        const fourBeatSectionWidth = ((4 * (BEAT_WIDTH + COLUMN_GAP)) + FULL_TIME_GAP)
-
-        const trackHeight = BEAT_HEIGHT + ROW_GAP
-
-        // Transform click position to where tracks are rendered
-        const cX0 = x - CONTROLS_WIDTH;
-        const cY0 = y - SCRUB_HEIGHT;
-
-        if (cX0 < 0 || cY0 < 0) {
-            return null
-        }
-
-        // get which subgrid was clicked on
-        const subgridX = Math.floor(cX0 / fourBeatSectionWidth)
-        // get which box in the subgrid was clicked on, capping at 3 so there are no weird overflowing things
-        const positionInSubgrid = Math.min(Math.floor(mod(cX0, fourBeatSectionWidth)/ (BEAT_WIDTH + COLUMN_GAP)), 3)
-        // this is the potential coords for the clicked box but we want to check if the user
-        // hasn't clicked/dragged on a space around the box (which are included in the calculations)
-        const proposedX = subgridX * 4 + positionInSubgrid;
-        // it's much simpler for the Y dimension
-        const proposedY = Math.floor(cY0 / trackHeight)
-
-
-        // Validate if proposed index matches with how the boxes are drawn on the screen
-        // If the click position matches with the position of where boxes are being drawn,
-        // return the proposed position
-        const x0 = CONTROLS_WIDTH + (proposedX * BEAT_WIDTH) + (proposedX * COLUMN_GAP) + FULL_TIME_GAP * subgridX
-        const y0 = SCRUB_HEIGHT + (proposedY * BEAT_HEIGHT) + (proposedY * ROW_GAP)
-        if (isInRange(x, x0, x0 + BEAT_WIDTH) &&
-            isInRange(y, y0, y0 + BEAT_HEIGHT)) {
-            return [proposedX, proposedY]
-        } else {
-            return null
-        }
-    }
+        drawTracks(ctx, sprite, sequence)
+    }, [w, h, sprite, sequence])
 
     return <SequencerCanvas ref={sequencerRef}
                             style={{
@@ -223,11 +231,13 @@ function SequencerWrapper({size, sprite}) {
 export function Sequencer(props) {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
-    const [sequence, setSequence] = useState(Array(PAGE_SIZE).fill([]))
+    const useSequence = useState(Array(PAGE_SIZE).fill([]))
 
     return <CanvasWrapper ref={wrapperRef}>
         {size &&
-        <SequencerWrapper size={size} {...props}/>
+        <SequencerWrapper size={size}
+                          {...props}
+                          useSequence={useSequence}/>
         }
     </CanvasWrapper>
 

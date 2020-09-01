@@ -133,7 +133,6 @@ const LoopDaddyToUseSound = (sprite) => {
 function Launchpad({sprite, url}) {
     const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
     // Sprite config must be an object like: {TIMPANI: [0, 350], PLINK: [450, 985.43]}
-    console.log(sprite);
     const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite: LoopDaddyToUseSound(sprite)})
     const [pressedKeys, setPressedKeys] = useState(new Set())
 

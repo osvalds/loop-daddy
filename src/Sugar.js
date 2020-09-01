@@ -1,12 +1,14 @@
+const randomInt = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 export function getRandomColor() {
-    const randomInt = (min, max) => {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
 
     let h = randomInt(0, 360);
     let s = randomInt(42, 98);
-    let l = randomInt(40, 90);
-    return `hsl(${h},${s}%,${l}%)`;
+    let l = randomInt(40, 80);
+    return [`hsl(${h},${s}%,${l}%)`, `hsl(${h},${s}%,${90}%)`];
+
 }
 
 export const mod = (x, m) => {
