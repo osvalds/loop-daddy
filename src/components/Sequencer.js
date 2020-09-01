@@ -289,6 +289,23 @@ const PrimaryButton = styled.button`
 
 function StartPause({useIsPlaying}) {
     const [isPlaying, setIsPlaying] = useIsPlaying
+
+    const handlePlayPause = useCallback((event) => {
+        if (event.key === " ") {
+            setIsPlaying(p => !p)
+        }
+
+    }, [setIsPlaying])
+
+    useEffect(() => {
+        document.addEventListener("keydown", handlePlayPause, false);
+
+        return () => {
+            document.removeEventListener("keydown", handlePlayPause, false)
+        };
+    }, [handlePlayPause]);
+
+
     return <PrimaryButton onClick={() => setIsPlaying(p => !p)}>
         {isPlaying ? "pause" : "Play"}
     </PrimaryButton>
