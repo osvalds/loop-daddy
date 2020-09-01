@@ -9,9 +9,9 @@ const SCRUB_HEIGHT = 50
 const BEAT_HEIGHT = 50
 const BEAT_WIDTH = 40
 
-const FULL_TIME_GAP = 20
-const COLUMN_GAP = 10
+const COLUMN_GAP = 3
 const ROW_GAP = 8
+const FULL_TIME_GAP = ROW_GAP - COLUMN_GAP
 const PAGE_SIZE = 32
 
 const CONTROLS_WIDTH = 100
@@ -294,7 +294,6 @@ function StartPause({useIsPlaying}) {
         if (event.key === " ") {
             setIsPlaying(p => !p)
         }
-
     }, [setIsPlaying])
 
     useEffect(() => {
@@ -305,9 +304,9 @@ function StartPause({useIsPlaying}) {
         };
     }, [handlePlayPause]);
 
-
+    //@TODO change to an icon
     return <PrimaryButton onClick={() => setIsPlaying(p => !p)}>
-        {isPlaying ? "pause" : "Play"}
+        {isPlaying ? "Pause" : "Play"}
     </PrimaryButton>
 }
 

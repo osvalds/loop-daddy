@@ -13,7 +13,7 @@ const railOuterStyle = {
     position: 'absolute',
     width: '100%',
     height: 42,
-    transform: 'translate(0%, -50%)',
+    // transform: 'translate(0%, -50%)',
     borderRadius: 7,
     cursor: 'pointer',
 };
