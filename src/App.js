@@ -130,10 +130,9 @@ const LoopDaddyToUseSound = (sprite) => {
     return s;
 }
 
-function Launchpad({sprite, url}) {
+function Launchpad({sprite, play}) {
     const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
-    // Sprite config must be an object like: {TIMPANI: [0, 350], PLINK: [450, 985.43]}
-    const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite: LoopDaddyToUseSound(sprite)})
+
     const [pressedKeys, setPressedKeys] = useState(new Set())
 
     const handleSound = useCallback((event) => {
@@ -189,6 +188,20 @@ const ContentWrapper = styled.div`
   flex-direction: column;
 `
 
+function SoundPlayerWrapper({url, sprite}) {
+// Sprite config must be an object like: {TIMPANI: [0, 350], PLINK: [450, 985.43]}
+    const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite: LoopDaddyToUseSound(sprite)})
+
+    return (
+        <>
+            <Launchpad sprite={sprite}
+                       play={play}/>
+            <Sequencer sprite={sprite}
+                       play={play}/>
+        </>
+    )
+}
+
 function App() {
     const [selectedKit, setSelectedKit] = useState("808")
 
@@ -199,8 +212,7 @@ function App() {
                     return <option key={drumkitKey} value={drumkitKey}>{drumkitConfig.title}</option>
                 })}
             </select>
-            <Launchpad {...drumkits[selectedKit]}/>
-            <Sequencer {...drumkits[selectedKit]}/>
+            <SoundPlayerWrapper {...drumkits[selectedKit]}/>
         </ContentWrapper>
     );
 }

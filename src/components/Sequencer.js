@@ -3,6 +3,8 @@ import styled from "styled-components"
 import useResizeObserver from "@react-hook/resize-observer";
 import {mod} from "../Sugar";
 import {HorizontalSlider} from "./Slider/HorizontalSlider";
+import useSize from "../customHooks/useSize";
+import useInterval from "../customHooks/useInterval";
 
 const SCRUB_HEIGHT = 50
 
@@ -60,6 +62,7 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
     ctx.lineTo(x, y + radius.tl);
     ctx.quadraticCurveTo(x, y, x + radius.tl, y);
     ctx.closePath();
+
     if (fill) {
         ctx.fill();
     }
@@ -98,7 +101,7 @@ const getActiveGradient = (ctx, x0, y0, lighterColor, darkerColor) => {
     return gradient
 }
 
-const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence) => {
+const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence, playingBeatIndex, isPlaying) => {
     drawTrackTitle(ctx,
         trackName,
         0,
@@ -120,6 +123,17 @@ const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence) => {
                 lighterColor,
                 darkerColor) :
             darkerColor;
+        if (isPlaying) {
+            if (beatIndex === playingBeatIndex) {
+                ctx.strokeStyle = "white"
+                if (isBeatActive) {
+                    ctx.lineWidth = 4
+                } else {
+                    ctx.lineWidth = 1
+                }
+            }
+        }
+
 
         roundRect(
             ctx,
@@ -128,30 +142,19 @@ const drawSingleTrack = (ctx, trackName, color, trackIndex, sequence) => {
             BEAT_WIDTH,
             BEAT_HEIGHT,
             5,
-            true)
+            true,
+            beatIndex === playingBeatIndex)
     }
 }
 
-const drawTracks = (ctx, sprite, sequence) => {
+const drawTracks = (ctx, sprite, sequence, playingBeatIndex, isPlaying) => {
     let i = 0;
 
     // sprite entries are the tracks (e.g. castanets, timpani, plink etc.
     for (let [name, v] of Object.entries(sprite)) {
-        drawSingleTrack(ctx, name, v.color, i, sequence)
+        drawSingleTrack(ctx, name, v.color, i, sequence, playingBeatIndex, isPlaying)
         i++;
     }
-}
-
-const useSize = (target) => {
-    const [size, setSize] = React.useState(null)
-
-    React.useLayoutEffect(() => {
-        setSize(target.current.getBoundingClientRect())
-    }, [target])
-
-    // Where the magic happens
-    useResizeObserver(target, (entry) => setSize(entry.contentRect))
-    return size
 }
 
 const CanvasWrapper = styled.div`
@@ -216,7 +219,7 @@ const canvasClickCoordsToClickedBeat = (canvas, event, sequence) => {
     }
 }
 
-function SequencerWrapper({size, sprite, useSequence}) {
+function SequencerWrapper({size, sprite, isPlaying, useSequence, playingBeatIndex}) {
     const [sequence, setSequence] = useSequence
     const [lastDraggedBeat, setLastDraggedBeat] = useState(null)
     const sequencerRef = useRef(null)
@@ -234,8 +237,8 @@ function SequencerWrapper({size, sprite, useSequence}) {
         const ctx = sequencerRef.current.getContext("2d")
         ctx.fillStyle = "#070707"
         ctx.fillRect(0, 0, w, h)
-        drawTracks(ctx, sprite, sequence)
-    }, [w, h, sprite, sequence])
+        drawTracks(ctx, sprite, sequence, playingBeatIndex, isPlaying)
+    }, [w, h, sprite, sequence, playingBeatIndex, isPlaying])
 
     const getClickedTrack = ([x, y]) => {
         const spriteArray = Object.entries(sprite)
@@ -308,25 +311,26 @@ const PrimaryButton = styled.button`
   padding: 4px 12px;
 `
 
-function StartPause({useIsPlaying}) {
-    const [isPlaying, setIsPlaying] = useIsPlaying
+function StartPause({isPlaying, onTrigger}) {
 
-    const handlePlayPause = useCallback((event) => {
-        if (event.key === " ") {
-            setIsPlaying(p => !p)
-        }
-    }, [setIsPlaying])
 
     useEffect(() => {
+        const handlePlayPause = (event) => {
+            if (event.key === " ") {
+                onTrigger()
+            }
+        }
+
         document.addEventListener("keydown", handlePlayPause, false);
 
         return () => {
+            console.log("asfdasdf")
             document.removeEventListener("keydown", handlePlayPause, false)
         };
-    }, [handlePlayPause]);
+    }, []);
 
     //@TODO change to an icon
-    return <PrimaryButton onClick={() => setIsPlaying(p => !p)}>
+    return <PrimaryButton onClick={onTrigger}>
         {isPlaying ? "Pause" : "Play"}
     </PrimaryButton>
 }
@@ -356,27 +360,56 @@ const ControlsWrapper = styled.div`
   justify-content: space-between;
 `
 
-export function Sequencer(props) {
+export function Sequencer({sprite, play}) {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
-    const useSequence = useState(Array(PAGE_SIZE).fill(new Set()))
+    const [sequence, setSequence] = useState(Array(PAGE_SIZE).fill(new Set()))
     const [isPlaying, setIsPlaying] = useState(false)
 
     const [tempo, setTempo] = useState(120)
     const [playingBeatIndex, setPlayingBeatIndex] = useState(0)
 
+    const playSoundsAtIndex = () => {
+        console.log(sequence[playingBeatIndex])
+
+    }
+
+    const playAndAdvance = useCallback(() => {
+        // @TODO this should use sequence length
+        setPlayingBeatIndex(i => mod(i + 1, PAGE_SIZE))
+    }, [setPlayingBeatIndex])
+
+    useEffect(() => {
+        if (isPlaying) {
+            for (let soundId of sequence[playingBeatIndex]) {
+                play({id: soundId})
+            }
+        }
+    }, [playingBeatIndex, isPlaying])
+
+    const interval = Math.floor(60000 / tempo)
+
+    // console.log(interval)
+
+    useInterval(playAndAdvance, isPlaying ? interval : null)
+
+    const onTrigger = () => {
+        setIsPlaying(p => !p)
+    }
+
     return <CanvasWrapper ref={wrapperRef}>
         <ControlsWrapper>
             <TempoControls useTempo={[tempo, setTempo]}/>
-            <StartPause useIsPlaying={[isPlaying, setIsPlaying]}/>
+            <StartPause isPlaying={isPlaying}
+                        onTrigger={onTrigger}/>
         </ControlsWrapper>
 
         {size &&
         <SequencerWrapper size={size}
-                          {...props}
+                          sprite={sprite}
                           isPlaying={isPlaying}
                           playingBeatIndex={playingBeatIndex}
-                          useSequence={useSequence}/>
+                          useSequence={[sequence, setSequence]}/>
         }
     </CanvasWrapper>
 
