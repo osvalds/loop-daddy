@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react"
 import styled from "styled-components"
 import useResizeObserver from "@react-hook/resize-observer";
 import {mod} from "../Sugar";
+import {HorizontalSlider} from "./Slider/HorizontalSlider";
 
 const SCRUB_HEIGHT = 50
 
@@ -293,6 +294,21 @@ function StartPause({useIsPlaying}) {
     </PrimaryButton>
 }
 
+const TempoWrapper = styled.div`
+  max-width: 300px;
+`
+
+function TempoControls({useTempo}) {
+    const [tempo] = useTempo;
+
+    return (
+        <TempoWrapper>
+            <div>tempo: {tempo}</div>
+            <HorizontalSlider useValue={useTempo}/>
+        </TempoWrapper>
+    )
+}
+
 export function Sequencer(props) {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
@@ -303,6 +319,7 @@ export function Sequencer(props) {
     const [playingBeatIndex, setPlayingBeatIndex] = useState(0)
 
     return <CanvasWrapper ref={wrapperRef}>
+        <TempoControls useTempo={[tempo, setTempo]}/>
         <StartPause useIsPlaying={[isPlaying, setIsPlaying]}/>
         {size &&
         <SequencerWrapper size={size}
