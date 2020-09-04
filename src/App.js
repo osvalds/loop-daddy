@@ -1,5 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import useSound from "use-sound";
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import styled from "styled-components";
 import Sprite808 from "./drumkitSprites/808sprite.json";
 import Sprite909 from "./drumkitSprites/909sprite.json";
@@ -7,6 +6,7 @@ import SpriteRoland from "./drumkitSprites/rolandSprite.json";
 
 import {Sequencer} from "./components/Sequencer";
 import {getRandomColor} from "./Sugar";
+import * as Tone from "tone";
 
 // 1 -> q
 // 2 -> q,w
@@ -189,20 +189,46 @@ const ContentWrapper = styled.div`
 `
 
 function SoundPlayerWrapper({url, sprite}) {
+    const synthRef = useRef(null)
 // Sprite config must be an object like: {TIMPANI: [0, 350], PLINK: [450, 985.43]}
-    const [play] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite: LoopDaddyToUseSound(sprite)})
+//     const [play, {sound}] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite: LoopDaddyToUseSound(sprite)})
+
+    useEffect(() => {
+        synthRef.current = new Tone.Synth().toDestination()
+        synthRef.current.triggerAttackRelease("C4", "8n")
+    }, [])
 
     return (
         <>
-            <Launchpad sprite={sprite}
-                       play={play}/>
-            <Sequencer sprite={sprite}
-                       play={play}/>
+            <Launchpad sprite={sprite}/>
+            {/*<Sequencer sprite={sprite}*/}
+            {/*           play={play}/>*/}
         </>
     )
 }
 
+function useUnlockAudio() {
+    useEffect(() => {
+        const unlock = async () => {
+            await Tone.start()
+            console.log("Audio context is ready")
+        }
+
+        document.addEventListener('touchstart', unlock, true);
+        document.addEventListener('touchend', unlock, true);
+        document.addEventListener('click', unlock, true);
+
+        return () => {
+            document.removeEventListener('touchstart', unlock, true);
+            document.removeEventListener('touchend', unlock, true);
+            document.removeEventListener('click', unlock, true);
+        }
+    }, [])
+}
+
+
 function App() {
+    useUnlockAudio();
     const [selectedKit, setSelectedKit] = useState("808")
 
     return (

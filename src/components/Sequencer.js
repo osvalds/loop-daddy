@@ -387,7 +387,7 @@ export function Sequencer({sprite, play}) {
         }
     }, [playingBeatIndex, isPlaying])
 
-    const interval = Math.floor(60000 / tempo)
+    const interval = Math.floor(60000 / tempo / 4)
 
     // console.log(interval)
 
@@ -412,5 +412,4 @@ export function Sequencer({sprite, play}) {
                           useSequence={[sequence, setSequence]}/>
         }
     </CanvasWrapper>
-
 }
