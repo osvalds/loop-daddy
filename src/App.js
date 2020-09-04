@@ -7,6 +7,7 @@ import SpriteRoland from "./drumkitSprites/rolandSprite.json";
 import {Sequencer} from "./components/Sequencer";
 import {getRandomColor} from "./Sugar";
 import * as Tone from "tone";
+import {useUnlockAudio} from "./customHooks/useUnlockListener";
 
 // 1 -> q
 // 2 -> q,w
@@ -206,26 +207,6 @@ function SoundPlayerWrapper({url, sprite}) {
         </>
     )
 }
-
-function useUnlockAudio() {
-    useEffect(() => {
-        const unlock = async () => {
-            await Tone.start()
-            console.log("Audio context is ready")
-        }
-
-        document.addEventListener('touchstart', unlock, true);
-        document.addEventListener('touchend', unlock, true);
-        document.addEventListener('click', unlock, true);
-
-        return () => {
-            document.removeEventListener('touchstart', unlock, true);
-            document.removeEventListener('touchend', unlock, true);
-            document.removeEventListener('click', unlock, true);
-        }
-    }, [])
-}
-
 
 function App() {
     useUnlockAudio();
