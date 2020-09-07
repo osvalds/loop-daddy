@@ -4,6 +4,7 @@ import styled from "styled-components";
 import {getRandomColor} from "./Sugar";
 import * as Tone from "tone";
 import {useUnlockAudio} from "./customHooks/useUnlockListener";
+import {Header} from "./components/Header/Header";
 
 // 1 -> q
 // 2 -> q,w
@@ -149,6 +150,7 @@ function App() {
 
     return (
         <ContentWrapper>
+            <Header/>
             <SoundPlayerWrapper/>
         </ContentWrapper>
     );
