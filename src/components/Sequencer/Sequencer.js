@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import styled from "styled-components";
 import * as Tone from "tone";
 import {TextToInput} from "../TextToInput";
-import {SequencerHeader} from "./SequencerHeader";
+import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
 
 // 1 -> q
 // 2 -> q,w
@@ -44,6 +44,10 @@ function SoundSoundSound({name, keyboard}) {
     }, [setIsActive])
 
     const handleKeyDown = useCallback((event) => {
+        // this prevents multiple firings when key stays pressed
+        if (event.repeat) {
+            return
+        }
         if (event.key === keyboard) {
             setIsActive(true)
             toneRef.current.start()
