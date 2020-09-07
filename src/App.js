@@ -1,10 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import styled from "styled-components";
-import Sprite808 from "./drumkitSprites/808sprite.json";
-import Sprite909 from "./drumkitSprites/909sprite.json";
-import SpriteRoland from "./drumkitSprites/rolandSprite.json";
 
-import {Sequencer} from "./components/Sequencer";
 import {getRandomColor} from "./Sugar";
 import * as Tone from "tone";
 import {useUnlockAudio} from "./customHooks/useUnlockListener";
@@ -31,40 +27,6 @@ const defaultKeyboardMap =
         9: ["q", "w", "e", "a", "s", "d", "z", "x", "c"]
     }
 
-const buildHowlerSpriteObj = (spriteMap) => {
-    const spriteArray = Object.entries(spriteMap)
-    const sprite = {}
-
-    for (let [k, v] of spriteArray) {
-        sprite[k] = {
-            coords: [v.start * 1000, (v.end - v.start) * 1000],
-            color: getRandomColor()
-        }
-    }
-
-    return sprite;
-}
-
-const drumkits = {
-    "808": {
-        value: "808", url: "/drums/808/808sprite.mp3",
-        title: "808 Drumset",
-        sprite: buildHowlerSpriteObj(Sprite808.spritemap)
-    },
-    "909": {
-        value: "909",
-        url: "/drums/909/909sprite.mp3",
-        title: "909 Drumset",
-        sprite: buildHowlerSpriteObj(Sprite909.spritemap)
-    },
-    "roland": {
-        value: "roland",
-        url: "/drums/rolandtd7/rolandSprite.mp3",
-        title: "Roland TD 7",
-        sprite: buildHowlerSpriteObj(SpriteRoland.spritemap)
-    }
-}
-
 const LaunchpadButton = styled.button`
   border-radius: 5px;
   border: none;
@@ -73,12 +35,43 @@ const LaunchpadButton = styled.button`
 `
 
 // TILL THE DAY I DIE
-function SoundSoundSound({onPlay, name, keyboard, pressedKeys}) {
+function SoundSoundSound({name, keyboard}) {
     const [isActive, setIsActive] = useState(false)
+    const toneRef = useRef(null)
+
     const onDown = useCallback(() => {
         setIsActive(true)
-        onPlay()
-    }, [setIsActive, onPlay])
+        toneRef.current.start()
+    }, [setIsActive])
+
+    const handleKeyDown = useCallback((event) => {
+        if (event.key === keyboard) {
+            setIsActive(true)
+            toneRef.current.start()
+        }
+    }, [toneRef]);
+
+    const handleKeyUp = useCallback((event) => {
+        if (event.key === keyboard) {
+            setIsActive(false)
+        }
+    }, [setIsActive])
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleKeyDown, false);
+        document.addEventListener("keyup", handleKeyUp, false);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown, false)
+            document.removeEventListener("keyup", handleKeyUp, false)
+        };
+    }, [handleKeyUp, handleKeyDown]);
+
+    useEffect(() => {
+        toneRef.current = new Tone.Player({
+            url: `${process.env.PUBLIC_URL}/drums/808/${name}.wav`,
+        }).toDestination();
+    }, [])
 
     return (
         <LaunchpadButton
@@ -89,7 +82,7 @@ function SoundSoundSound({onPlay, name, keyboard, pressedKeys}) {
             // don't store the active state if mouse is dragged outside
             onMouseLeave={() => setIsActive(false)}
             onTouchStart={onDown}
-            isActive={pressedKeys.has(keyboard) || isActive}
+            isActive={isActive}
             onTouchEnd={e => {
                 e.preventDefault()
                 setIsActive(false)
@@ -120,62 +113,16 @@ const LaunchpadWrapper = styled.div`
     } 
 `
 
-const LoopDaddyToUseSound = (sprite) => {
-    const spriteArray = Object.entries(sprite)
-    const s = {}
 
-    for (let [k, v] of spriteArray) {
-        s[k] = v.coords
-    }
-
-    return s;
-}
-
-function Launchpad({sprite, play}) {
-    const keyMap = defaultKeyboardMap[Object.keys(sprite).length]
-
-    const [pressedKeys, setPressedKeys] = useState(new Set())
-
-    const handleSound = useCallback((event) => {
-        const sampleIndex = keyMap.indexOf(event.key)
-        const spriteId = Object.keys(sprite)[sampleIndex]
-        setPressedKeys(pkeys => {
-            let newPkeys = new Set(pkeys)
-            newPkeys.add(event.key)
-            return newPkeys;
-        })
-
-        if (sampleIndex > -1) {
-            play({id: spriteId})
-        }
-    }, [sprite, keyMap, play, setPressedKeys]);
-
-    const handleKeyUp = useCallback((event) => {
-        setPressedKeys(pkeys => {
-            let newPkeys = new Set(pkeys)
-            newPkeys.delete(event.key)
-            return newPkeys
-        })
-    }, [setPressedKeys])
-
-    useEffect(() => {
-        document.addEventListener("keydown", handleSound, false);
-        document.addEventListener("keyup", handleKeyUp, false);
-
-        return () => {
-            document.removeEventListener("keydown", handleSound, false)
-            document.removeEventListener("keyup", handleKeyUp, false)
-        };
-    }, [handleSound, handleKeyUp]);
+function Launchpad({samples}) {
+    const keyMap = defaultKeyboardMap[samples.length]
 
     return (
         <LaunchpadWrapper>
-            {Object.entries(sprite).map(([k, v], index) => {
-                return <SoundSoundSound key={k}
-                                        name={k}
-                                        pressedKeys={pressedKeys}
+            {samples.map((sampleName, index) => {
+                return <SoundSoundSound key={sampleName}
+                                        name={sampleName}
                                         keyboard={keyMap[index]}
-                                        onPlay={() => play({id: k})}
                 />
             })}
         </LaunchpadWrapper>
@@ -189,37 +136,20 @@ const ContentWrapper = styled.div`
   flex-direction: column;
 `
 
-function SoundPlayerWrapper({url, sprite}) {
-    const synthRef = useRef(null)
-// Sprite config must be an object like: {TIMPANI: [0, 350], PLINK: [450, 985.43]}
-//     const [play, {sound}] = useSound(`${process.env.PUBLIC_URL}${url}`, {sprite: LoopDaddyToUseSound(sprite)})
-
-    useEffect(() => {
-        synthRef.current = new Tone.Synth().toDestination()
-        synthRef.current.triggerAttackRelease("C4", "8n")
-    }, [])
+function SoundPlayerWrapper() {
+    const samples = ["808-bd02", "808-bd14", "808-clap2", "808-cym01", "808-hh02", "808-sd03", "808-tme1"]
 
     return (
-        <>
-            <Launchpad sprite={sprite}/>
-            {/*<Sequencer sprite={sprite}*/}
-            {/*           play={play}/>*/}
-        </>
+        <Launchpad samples={samples}/>
     )
 }
 
 function App() {
     useUnlockAudio();
-    const [selectedKit, setSelectedKit] = useState("808")
 
     return (
         <ContentWrapper>
-            <select value={selectedKit} onChange={(e) => setSelectedKit(e.target.value)}>
-                {Object.entries(drumkits).map(([drumkitKey, drumkitConfig]) => {
-                    return <option key={drumkitKey} value={drumkitKey}>{drumkitConfig.title}</option>
-                })}
-            </select>
-            <SoundPlayerWrapper {...drumkits[selectedKit]}/>
+            <SoundPlayerWrapper/>
         </ContentWrapper>
     );
 }
