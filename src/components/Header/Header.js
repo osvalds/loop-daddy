@@ -1,42 +1,90 @@
-import React from "react";
+import React, {useState} from "react";
 import {ReactComponent as Kimono} from "./Icons/kimono.svg";
-import {ReactComponent as Boxers} from "./Icons/boxers.svg";
-import {ReactComponent as Loop} from "./Icons/loop.svg";
-import {ReactComponent as Moustache} from "./Icons/moustache.svg";
 import {ReactComponent as GitHubLogo} from "./Icons/gh.svg";
-import styled from "styled-components"
+import styled, {keyframes} from "styled-components"
 
 const LogoWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 4px;
-  margin: 4px 0;
-  max-width: 64px;  
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  
 `
 
 const IconWrapper = styled.div`
   svg {
     width: 100%;
+    max-width: 48px;
     height: auto;
     fill: white;
   }
 `
 
-function Logo() {
+const LogoTitle = styled.h1`
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+  font-size: 18px;
+  padding: 0 6px;
+  user-select: none;
+  flex: 1 0 auto;
+`
+
+const MarqueeAnimation = keyframes`
+    0% {
+        transform: translate3d(var(--move-initial), 0, 0);
+    }
+
+    100% {
+        transform: translate3d(var(--move-final), 0, 0);
+    }
+`
+
+const MarqueeLogoWrapper = styled.div`
+    position: relative;
+    overflow: hidden;
+    --offset: 0px;
+    --move-initial: calc(-25% + var(--offset));
+    --move-final: calc(-75% + var(--offset));
+`
+
+const MarqueeInner = styled.div`
+    display: flex;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate3d(var(--move-initial), 0, 0);
+    animation: ${MarqueeAnimation} 5s linear infinite;
+    animation-play-state: ${props => props.$running ? "running" : "paused"}
+`
+
+const LogoPlaceholder = styled(LogoTitle)`
+  position: static;
+  opacity: 0;
+  color: pink
+`
+
+function MarqueeLogo({running}) {
     return (
-        <LogoWrapper>
-            <IconWrapper>
-                <Loop/>
-            </IconWrapper>
+        <MarqueeLogoWrapper>
+            <LogoPlaceholder>Loop Daddy</LogoPlaceholder>
+            <MarqueeInner $running={running}>
+                <LogoTitle>Loop Daddy</LogoTitle>
+                <LogoTitle>Loop Daddy</LogoTitle>
+                <LogoTitle>Loop Daddy</LogoTitle>
+                <LogoTitle>Loop Daddy</LogoTitle>
+            </MarqueeInner>
+        </MarqueeLogoWrapper>
+    )
+}
+
+function Logo() {
+    const [running, setIsrunning] = useState(false)
+    return (
+        <LogoWrapper onClick={() => setIsrunning(r => !r)}>
             <IconWrapper>
                 <Kimono/>
             </IconWrapper>
-            <IconWrapper>
-                <Boxers/>
-            </IconWrapper>
-            <IconWrapper>
-                <Moustache/>
-            </IconWrapper>
+            <MarqueeLogo running={running}/>
         </LogoWrapper>
     )
 }
@@ -56,8 +104,8 @@ function LinkSection() {
     return (
         <LinkSectionWrapper>
             <Link target="_blank"
-               rel="noopener noreferrer"
-               href="https://youtube.com/marcrebillet">
+                  rel="noopener noreferrer"
+                  href="https://youtube.com/marcrebillet">
                 The Inspiration
             </Link>
             <a target="_blank"
@@ -70,7 +118,7 @@ function LinkSection() {
 }
 
 const HeaderWrapper = styled.div`
-  padding: 0 24px;
+  padding: 8px 24px;
   margin-bottom: 24px;
   display: flex;
   align-items: center;
