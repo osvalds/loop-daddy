@@ -1,46 +1,41 @@
 import React, {useEffect, useRef, useState} from "react";
+import styled, {css} from "styled-components"
 
-function Input({useValue, setIsActive}) {
+const sharedInputStyle = css`
+  font-weight: bold;
+  color: white;
+  font-size: 16px;
+  padding: 0;
+  margin: 0;
+  min-width: 180px;
+  max-width: 300px;
+  width: 100%;
+`
+
+const StyledInput = styled.input`
+  background-color: transparent;
+  -webkit-appearance: none;
+  
+  border: 1px solid transparent;
+  ${sharedInputStyle}
+  
+  &:focus {
+    border: 1px solid #e2e8f0; 
+  }
+`
+
+function Input({useValue}) {
     const [value, setValue] = useValue
-    const inputRef = useRef(null)
-
-    useEffect(() => {
-        inputRef.current.focus()
-    }, [])
-
-    return <input ref={inputRef}
-                  value={value}
-                  onBlur={() => setIsActive(false)}
-                  onKeyDown={(e) => {
-                      if (e.key === "Escape") {
-                          setIsActive(false)
-                      }
-                  }}
-                  onChange={(e) => setValue(e.target.value)}/>
-}
-
-function Title({setIsActive, children}) {
-
 
     return (
-        <div onClick={() => setIsActive(true)}>
-            {children}
-        </div>
+        <StyledInput
+            value={value}
+            onChange={(e) => setValue(e.target.value)}/>
     )
 }
 
 export function TextToInput({useValue}) {
-    const [isActive, setIsActive] = useState(false)
-    const [value, setValue] = useValue
-
     return (
-        <div>
-            {isActive ?
-                <Input useValue={useValue}
-                       setIsActive={setIsActive}/> :
-                <Title setIsActive={setIsActive}>
-                    {value}
-                </Title>}
-        </div>
+        <Input useValue={useValue}/>
     )
 }
