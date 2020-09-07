@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import styled from "styled-components";
 import * as Tone from "tone";
+import {TextToInput} from "../TextToInput";
 
 // 1 -> q
 // 2 -> q,w
@@ -126,10 +127,29 @@ function Launchpad({samples}) {
     );
 }
 
-export function Sequencer() {
-    const samples = ["808-bd02", "808-bd14", "808-clap2", "808-cym01", "808-hh02", "808-sd03", "808-tme1"]
+function SequencerHeader({useTrackTitle, useBpm, useShuffle}) {
+
 
     return (
-        <Launchpad samples={samples}/>
+        <div>
+            <TextToInput useValue={useTrackTitle}/>
+        </div>
+    )
+}
+
+export function Sequencer() {
+    const samples = ["808-bd02", "808-bd14", "808-clap2", "808-cym01", "808-hh02", "808-sd03", "808-tme1"]
+    const useTrackTitle = useState("Untitled")
+    const useBpm = useState(120)
+    const useShuffle = useState(120)
+
+
+    return (
+        <>
+            <Launchpad samples={samples}/>
+            <SequencerHeader useTrackTitle={useTrackTitle}
+                             useBpm={useBpm}
+                             useShuffle={useShuffle}/>
+        </>
     )
 }
