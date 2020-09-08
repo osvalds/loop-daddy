@@ -55,7 +55,7 @@ const MetronomePendulum = styled.span.attrs(props => {
 `
 
 export function Metronome({useBpm}) {
-    const [isRunning, setIsRunning] = useState(false)
+    const [isRunning, setIsRunning] = useState(true)
     const [bpm, setBpm] = useBpm
 
     const HandleClick = useCallback(() => {
@@ -75,7 +75,7 @@ export function Metronome({useBpm}) {
     useEffect(() => {
         conga.current = new Tone.MembraneSynth({
             pitchDecay: 0.008,
-            octaves: 2,
+            octaves: 1,
             envelope: {
                 attack: 0.0006,
                 decay: 0.5,
@@ -85,7 +85,7 @@ export function Metronome({useBpm}) {
 
         congaPart.current = new Tone.Sequence(((time, pitch) => {
             conga.current.triggerAttack(pitch, time, 1);
-        }), ["G3", "C4", "C4", "C4"], "4n").start(0);
+        }), ["E4", "C4", "C4", "C4"], "4n").start(0);
     }, [])
 
     useEffect(() => {
