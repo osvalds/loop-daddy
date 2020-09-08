@@ -21,6 +21,7 @@ const MetronomeButton = styled.button`
     padding: ${VERTICAL_PADDING}px 24px;
     background: hsl(240, 4%, 9%);
     border-radius: ${BORDER_RADIUS}px;
+    margin-right: auto;
     position: relative;
  
     & > * {

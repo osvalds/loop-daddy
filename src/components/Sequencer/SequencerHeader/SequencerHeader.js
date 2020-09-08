@@ -103,6 +103,7 @@ const SequencerHeaderWrapper = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 12px 0;
+    margin-bottom: 12px;
     
 `
 
