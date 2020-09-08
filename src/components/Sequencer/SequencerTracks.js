@@ -1,6 +1,6 @@
 import React, {useState} from "react"
-import {ReactComponent as MuteIcon} from "./icons/mute.svg";
-import {ReactComponent as VolumeIcon} from "./icons/volume.svg";
+import {ReactComponent as MuteIcon} from "./SequencerHeader/icons/mute.svg";
+import {ReactComponent as VolumeIcon} from "./SequencerHeader/icons/volume.svg";
 import styled from "styled-components";
 
 const TrackControlButton = styled.button`

@@ -1,9 +1,8 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import styled from "styled-components";
 import * as Tone from "tone";
-import {TextToInput} from "../TextToInput";
 import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
-import {SequencerTrack} from "./SequencerHeader/SequencerTracks";
+import {SequencerTrack} from "./SequencerTracks";
 
 // 1 -> q
 // 2 -> q,w

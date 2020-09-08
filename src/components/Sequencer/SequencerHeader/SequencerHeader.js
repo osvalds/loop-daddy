@@ -45,7 +45,7 @@ function TransportControlButton({onClick, children}) {
 }
 
 const ControlsWrapper = styled.div`
-    
+    margin: 0 auto 0 30px;
 `
 
 const cycleAnimation = keyframes`
