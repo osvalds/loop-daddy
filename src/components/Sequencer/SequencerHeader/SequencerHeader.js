@@ -5,6 +5,7 @@ import {ReactComponent as PlayIcon} from "./icons/play.svg";
 import {ReactComponent as PauseIcon} from "./icons/pause.svg";
 import {ReactComponent as RecordIcon} from "./icons/record.svg";
 import {ReactComponent as StopIcon} from "./icons/stop.svg";
+import {Metronome} from "./Metronome";
 
 const BORDER_RADIUS = 8;
 
@@ -93,12 +94,6 @@ function TransportControls() {
                 <StyledRecordIcon $isRecording={isRecording}/>
             </TransportControlButton>
         </ControlsWrapper>
-    )
-}
-
-function Metronome() {
-    return (
-        "METRO BOOMIN"
     )
 }
 
