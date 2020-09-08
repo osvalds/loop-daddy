@@ -36,7 +36,7 @@ const MetronomeButton = styled.button`
         height: 24px;
         left: 50%;
         transform: translateX(-50%) rotate(-30deg);
-        animation: ${props => props.$isRunning ? (css`${metroZOOMIN} 1s linear infinite alternate`) : "none"} ;
+        animation: ${metroZOOMIN} 1s linear infinite alternate ;
         animation-play-state: ${props => props.$isRunning ? "running" : "paused"};
         transform-origin: bottom center;
         background-color: white;
