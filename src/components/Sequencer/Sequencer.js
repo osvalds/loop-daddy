@@ -3,6 +3,7 @@ import styled from "styled-components";
 import * as Tone from "tone";
 import {TextToInput} from "../TextToInput";
 import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
+import {SequencerTrack} from "./SequencerHeader/SequencerTracks";
 
 // 1 -> q
 // 2 -> q,w
@@ -149,6 +150,7 @@ export function Sequencer() {
             <SequencerHeader useTrackTitle={useTrackTitle}
                              useBpm={useBpm}
                              useSwing={useSwing}/>
+            <SequencerTrack/>
         </SequencerWrapper>
     )
 }
