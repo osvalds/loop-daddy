@@ -3,7 +3,6 @@ import styled, {css, keyframes} from "styled-components"
 import {ReactComponent as MetronomeIcon} from "./icons/metronome.svg";
 import * as Tone from "tone"
 
-
 const BORDER_RADIUS = 5;
 const VERTICAL_PADDING = 8;
 
@@ -38,7 +37,7 @@ const MetronomeButton = styled.button`
         height: 24px;
         left: 50%;
         transform: translateX(-50%) rotate(-30deg);
-        animation: ${metroZOOMIN} ${60 / 100}s linear infinite alternate ;
+        animation: ${metroZOOMIN} ${props => 60 / props.$bpm}s linear infinite alternate ;
         animation-play-state: ${props => props.$isRunning ? "running" : "paused"};
         transform-origin: bottom center;
         background-color: white;
@@ -50,9 +49,9 @@ const MetronomeButton = styled.button`
 `
 
 
-
 export function Metronome() {
     const [isRunning, setIsRunning] = useState(false)
+    const [bpm, setBpm] = useState(100)
 
     const HandleClick = useCallback(() => {
         if (isRunning) {
@@ -82,14 +81,20 @@ export function Metronome() {
         congaPart.current = new Tone.Sequence(((time, pitch) => {
             conga.current.triggerAttack(pitch, time, 1);
         }), ["G3", "C4", "C4", "C4"], "4n").start(0);
-
-        Tone.Transport.bpm.value = 100
     }, [])
+
+    useEffect(() => {
+        Tone.Transport.bpm.value = bpm
+    }, [bpm])
 
 
     return (
-        <MetronomeButton $isRunning={isRunning} onClick={HandleClick}>
-            <MetronomeIcon/>
-        </MetronomeButton>
+        <>
+            <MetronomeButton $isRunning={isRunning}
+                             onClick={HandleClick}
+                             $bpm={bpm}>
+                <MetronomeIcon/>
+            </MetronomeButton>
+        </>
     )
 }

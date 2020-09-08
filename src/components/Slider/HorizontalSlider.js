@@ -9,9 +9,9 @@ const sliderStyle = {
     touchAction: 'none',
 };
 
-const domain = [40, 218];
+const defaultDomain = [40, 240];
 
-export function HorizontalSlider({useValue}) {
+export function HorizontalSlider({useValue, domain = defaultDomain}) {
     const [value, setValue] = useValue;
 
     const handleUpdate = ([value]) => {
