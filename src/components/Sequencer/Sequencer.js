@@ -138,7 +138,7 @@ const SequencerWrapper = styled.section`
 
 export function Sequencer() {
     const samples = ["808-bd02", "808-bd14", "808-clap2", "808-cym01", "808-hh02", "808-sd03", "808-tme1"]
-    const useTrackTitle = useState("Untitled")
+    const useTrackTitle = useState("Untitled Unmastered")
     const useBpm = useState(120)
     const useShuffle = useState(120)
 
