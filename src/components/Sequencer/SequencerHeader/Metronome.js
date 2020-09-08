@@ -55,7 +55,7 @@ const MetronomePendulum = styled.span.attrs(props => {
 `
 
 export function Metronome({useBpm}) {
-    const [isRunning, setIsRunning] = useState(true)
+    const [isRunning, setIsRunning] = useState(false)
     const [bpm, setBpm] = useBpm
 
     const HandleClick = useCallback(() => {
