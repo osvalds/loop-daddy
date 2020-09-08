@@ -6,6 +6,7 @@ import {ReactComponent as PauseIcon} from "./icons/pause.svg";
 import {ReactComponent as RecordIcon} from "./icons/record.svg";
 import {ReactComponent as StopIcon} from "./icons/stop.svg";
 import {Metronome} from "./Metronome";
+import {TransportProperties} from "./TransportProperties";
 
 const BORDER_RADIUS = 8;
 
@@ -97,12 +98,6 @@ function TransportControls() {
     )
 }
 
-function TransportProperties() {
-    return (
-        ["BPM", "SWING"].map(i => <div key={i}>{i}</div>)
-    )
-}
-
 const SequencerHeaderWrapper = styled.div`
     display: flex;
     align-items: center;
@@ -111,13 +106,14 @@ const SequencerHeaderWrapper = styled.div`
     
 `
 
-export function SequencerHeader({useTrackTitle, useBpm, useShuffle}) {
+export function SequencerHeader({useTrackTitle, useBpm, useSwing}) {
     return (
         <SequencerHeaderWrapper>
             <TextToInput useValue={useTrackTitle}/>
             <TransportControls/>
             <Metronome useBpm={useBpm}/>
-            <TransportProperties/>
+            <TransportProperties useBpm={useBpm}
+                                 useSwing={useSwing}/>
         </SequencerHeaderWrapper>
     )
 }

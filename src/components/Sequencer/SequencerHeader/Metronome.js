@@ -29,25 +29,30 @@ const MetronomeButton = styled.button`
         fill: white;
         transition: .2s linear;
     }
-    
-    &:before {
-        content: "";
-        width: 3px;
+`
+
+const MetronomePendulum = styled.span.attrs(props => {
+    return {
+        style: {
+            animationDuration: `${60 / props.$bpm}s`
+        }
+    }
+})`
+        width: 3px !important;
+        display: block;
         position: absolute;
         height: 24px;
         left: 50%;
         transform: translateX(-50%) rotate(-30deg);
-        animation: ${metroZOOMIN} ${props => 60 / props.$bpm}s linear infinite alternate ;
-        animation-play-state: ${props => props.$isRunning ? "running" : "paused"};
+        animation: ${props => props.$isRunning ? css`${metroZOOMIN} linear infinite alternate-reverse` : ""};
+        animation-play-state: ${props => props.$isRunning ? "running" : "unset"};
         transform-origin: bottom center;
         background-color: white;
         border-radius: 4px;
         bottom: ${VERTICAL_PADDING + 3}px;
         z-index: 1;
         mix-blend-mode: difference;
-    }
 `
-
 
 export function Metronome({useBpm}) {
     const [isRunning, setIsRunning] = useState(false)
@@ -93,6 +98,7 @@ export function Metronome({useBpm}) {
             <MetronomeButton $isRunning={isRunning}
                              onClick={HandleClick}
                              $bpm={bpm}>
+                <MetronomePendulum $isRunning={isRunning} $bpm={bpm}/>
                 <MetronomeIcon/>
             </MetronomeButton>
         </>
