@@ -116,7 +116,7 @@ export function SequencerHeader({useTrackTitle, useBpm, useShuffle}) {
         <SequencerHeaderWrapper>
             <TextToInput useValue={useTrackTitle}/>
             <TransportControls/>
-            <Metronome/>
+            <Metronome useBpm={useBpm}/>
             <TransportProperties/>
         </SequencerHeaderWrapper>
     )

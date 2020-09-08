@@ -49,9 +49,9 @@ const MetronomeButton = styled.button`
 `
 
 
-export function Metronome() {
+export function Metronome({useBpm}) {
     const [isRunning, setIsRunning] = useState(false)
-    const [bpm, setBpm] = useState(100)
+    const [bpm, setBpm] = useBpm
 
     const HandleClick = useCallback(() => {
         if (isRunning) {
