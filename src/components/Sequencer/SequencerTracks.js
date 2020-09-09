@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 const TrackControlButton = styled.button`
   background-color: black;
+  color: white;
   fill: white;
   border: 1px solid transparent;
   
@@ -63,7 +64,7 @@ export function SequencerTrack() {
     return (
         <TrackWrapper>
             <ControlsWrapper>
-                <div>S</div>
+                <TrackControlButton>S</TrackControlButton>
                 <ToggleMute/>
                 <div>
                     Sick track name

@@ -3,6 +3,9 @@ import styled from "styled-components";
 import * as Tone from "tone";
 import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
 import {SequencerTrack} from "./SequencerTracks";
+import {getRandomColor, uuidv4} from "../../Sugar";
+import {useRecoilValue} from "recoil/dist";
+import {TrackAtom} from "./SequencerHeader/Sequencer.r";
 
 // 1 -> q
 // 2 -> q,w
@@ -40,7 +43,7 @@ function SoundSoundSound({name, keyboard}) {
 
     const onDown = useCallback(() => {
         setIsActive(true)
-        toneRef.current.start()
+        toneRef.current.triggerAttack("C2", "4t")
     }, [setIsActive])
 
     const handleKeyDown = useCallback((event) => {
@@ -50,7 +53,7 @@ function SoundSoundSound({name, keyboard}) {
         }
         if (event.key === keyboard) {
             setIsActive(true)
-            toneRef.current.start()
+            toneRef.current.triggerAttackRelease("C4", "4n")
         }
     }, [toneRef]);
 
@@ -71,8 +74,10 @@ function SoundSoundSound({name, keyboard}) {
     }, [handleKeyUp, handleKeyDown]);
 
     useEffect(() => {
-        toneRef.current = new Tone.Player({
-            url: `${process.env.PUBLIC_URL}/drums/808/${name}.wav`,
+        toneRef.current = new Tone.Sampler({
+            urls: {
+                C4: `${process.env.PUBLIC_URL}/drums/808/${name}.wav`
+            }
         }).toDestination();
     }, [])
 
@@ -141,11 +146,13 @@ export function Sequencer() {
     const useTrackTitle = useState("Untitled Unmastered")
     const useBpm = useState(120)
     const useSwing = useState(0)
+    const track = useRecoilValue(TrackAtom)
 
+    console.log(track)
 
     return (
         <SequencerWrapper>
-            <Launchpad samples={samples}/>
+            <Launchpad samples={samples}/>!
             <SequencerHeader useTrackTitle={useTrackTitle}
                              useBpm={useBpm}
                              useSwing={useSwing}/>
