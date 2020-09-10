@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components"
+import {TrackSelector} from "./TrackSelector";
 
 export const H_PADDING = 24
 
@@ -13,15 +14,10 @@ const FooterWrapper = styled.section`
   grid-template-columns: 250px 1fr;
 `
 
-function TrackSelector() {
-    return (
-        <div>Selected Track</div>
-    )
-}
-
 function NoteControls() {
     return <div>Note Controls</div>
 }
+
 export function SequencerFooter() {
     return (
         <FooterWrapper>
