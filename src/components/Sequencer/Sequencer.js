@@ -5,7 +5,7 @@ import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
 import {SequencerTrack} from "./SequencerTracks";
 import {getRandomColor, uuidv4} from "../../Sugar";
 import {useRecoilValue} from "recoil/dist";
-import {TrackAtom} from "./SequencerHeader/Sequencer.r";
+import {TrackAtom} from "./Sequencer.r";
 
 // 1 -> q
 // 2 -> q,w
