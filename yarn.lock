@@ -5441,6 +5441,11 @@ ini@^1.3.5:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
   integrity sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==
 
+inline-worker@~1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/inline-worker/-/inline-worker-1.1.0.tgz#55e96f54915a642b00872a2daa6fe832b424c98d"
+  integrity sha1-VelvVJFaZCsAhyotqm/oMrQkyY0=
+
 inquirer@7.0.4:
   version "7.0.4"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-7.0.4.tgz#99af5bde47153abca23f5c7fc30db247f39da703"
@@ -10678,6 +10683,13 @@ watchpack@^1.6.0:
     chokidar "^2.0.2"
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
+
+waveform-data@^3.3.4:
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-3.3.4.tgz#613fb81bf8974a9e2a328f70d2e954a08096f958"
+  integrity sha512-mE7455avSygHPXt3QJ0+fmpkWxWAxYVaXrInhIEksLd98NvDpxSoKDCFFM/xcSR+f7fr2OzJ5xUBZiT8ZbdBRA==
+  dependencies:
+    inline-worker "~1.1.0"
 
 wbuf@^1.1.0, wbuf@^1.7.3:
   version "1.7.3"
