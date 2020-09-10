@@ -6,6 +6,7 @@ import {SequencerTrack} from "./SequencerTracks";
 import {getRandomColor, uuidv4} from "../../Sugar";
 import {useRecoilValue} from "recoil/dist";
 import {TrackAtom} from "./Sequencer.r";
+import {H_PADDING, SequencerFooter} from "./SequencerFooter/SequencerFooter";
 
 // 1 -> q
 // 2 -> q,w
@@ -138,7 +139,11 @@ function Launchpad({samples}) {
 }
 
 const SequencerWrapper = styled.section`
-  padding: 0 24px;
+  padding: 0 ${H_PADDING}px;
+`
+
+const AddTrack = styled.button`
+  
 `
 
 export function Sequencer() {
@@ -157,6 +162,10 @@ export function Sequencer() {
                              useBpm={useBpm}
                              useSwing={useSwing}/>
             <SequencerTrack/>
+            <AddTrack>
+                +
+            </AddTrack>
+            <SequencerFooter/>
         </SequencerWrapper>
     )
 }

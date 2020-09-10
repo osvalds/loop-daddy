@@ -44,11 +44,12 @@ const ControlsWrapper = styled.div`
   align-items: center;
 `
 
+export const TRACK_GRID_TEMPLATE = "250px 1fr"
+
 const TrackWrapper = styled.div`
   color: white;
   display: grid;
-  grid-template-columns: 250px 1fr;
-  
+  grid-template-columns: ${TRACK_GRID_TEMPLATE};
 `
 
 const BeatWrapper = styled.div`

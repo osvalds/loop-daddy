@@ -21,7 +21,7 @@ export const TrackAtom = atom({
                 pitch: 0,
                 sample: {
                     name: "kick-1",
-                    uid: "6swrIRP9xQ-gypxEqVBcv"
+                    uid: uuidv4()
                 },
                 uid: "6swrIRP9xQ-gypxEqVBcv",
                 solo: false,
