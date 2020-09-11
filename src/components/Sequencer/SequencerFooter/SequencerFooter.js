@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import {TrackSelector} from "./TrackSelector";
+import {SampleSelector} from "./SampleSelector";
 
 export const H_PADDING = 24
 
@@ -21,7 +21,7 @@ function NoteControls() {
 export function SequencerFooter() {
     return (
         <FooterWrapper>
-            <TrackSelector/>
+            <SampleSelector/>
             <NoteControls/>
         </FooterWrapper>
     )

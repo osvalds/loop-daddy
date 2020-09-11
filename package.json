@@ -10,7 +10,6 @@
     "react": "^16.13.1",
     "react-compound-slider": "^2.5.0",
     "react-dom": "^16.13.1",
-    "react-hot-keys": "^2.6.0",
     "react-scripts": "3.4.1",
     "recoil": "^0.0.10",
     "styled-components": "^5.1.1",

@@ -1,10 +1,11 @@
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 import styled from "styled-components"
 import useSize from "../../../customHooks/useSize";
 import * as Tone from "tone";
 import WaveformData from "waveform-data";
 
 const WaveformCanvasStyled = styled.canvas`
+  cursor: pointer;
   position: absolute;
   width: 100%;
   height: 100%;
@@ -30,6 +31,9 @@ const getGradient = (ctx, lighterColor, darkerColor) => {
 }
 
 const drawWaveform = (ctx, waveform, canvasSize) => {
+    ctx.fillStyle = "hsl(240,4%,9%)"
+    ctx.fillRect(0, 0, canvasSize.width, canvasSize.height)
+
     ctx.beginPath();
 
     const channel = waveform.channel(0);
@@ -63,48 +67,49 @@ function WaveformCanvas({size, name = "808-bd14"}) {
     const {width, height} = size
     const canvasRef = useRef(null)
     const samplerRef = useRef(null)
-    const sampleBuffer = useRef(null)
+    const audioBufferRef = useRef(null)
+    // const [isReady, setIsready] = useState(false)
 
     useEffect(() => {
         const ctx = canvasRef.current.getContext("2d")
 
-        sampleBuffer.current = new Tone.ToneAudioBuffer(`${process.env.PUBLIC_URL}/drums/808/${name}.wav`, (buffer) => {
-            const audioBuffer = buffer.get()
-            const options = {
-                audio_buffer: audioBuffer,
-                scale: Math.floor(audioBuffer.length / width),
-                amplitude_scale: .8
-            };
+        audioBufferRef.current = new Tone.ToneAudioBuffer(`${process.env.PUBLIC_URL}/drums/808/${name}.wav`,
+            (buffer) => {
+                const audioBuffer = buffer.get()
+                const options = {
+                    audio_buffer: audioBuffer,
+                    scale: Math.floor(audioBuffer.length / width),
+                    amplitude_scale: .8
+                };
 
-            WaveformData.createFromAudio(options, (err, waveform) => {
-                console.log("callback")
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log(waveform.length)
-                    drawWaveform(ctx, waveform, size)
-
-                }
-            });
-        })
+                WaveformData.createFromAudio(options, (err, waveform) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        drawWaveform(ctx, waveform, size)
+                    }
+                });
+                samplerRef.current = new Tone.Sampler({"C4": buffer}).toDestination()
+            })
     }, [])
 
-    useEffect(() => {
-        const ctx = canvasRef.current.getContext("2d")
-        ctx.fillStyle = "hsl(240,4%,9%)"
-        ctx.fillRect(0, 0, width, height)
-    }, [width, height])
-
     return (
-        <WaveformCanvasStyled ref={canvasRef}
-                              width={width}
-                              onClick={() => samplerRef.current.triggerAttackRelease("C4")}
-                              height={height}/>
+        <>
+            <WaveformCanvasStyled ref={canvasRef}
+                                  width={width}
+                                  onClick={() => {
+                                      if (samplerRef.current?.loaded) {
+                                          samplerRef.current.triggerAttack("C4")
+                                      }
+                                  }}
+                                  height={height}/>
+        </>
     )
 }
 
 const CanvasWrapper = styled.div`
   position: relative;
+  
   &:before {
     content: "";
     width: 100%;
@@ -114,7 +119,7 @@ const CanvasWrapper = styled.div`
 `
 
 
-export function TrackSelector() {
+export function SampleSelector() {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
 

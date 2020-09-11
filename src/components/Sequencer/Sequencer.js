@@ -5,7 +5,7 @@ import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
 import {SequencerTrack} from "./SequencerTracks";
 import {getRandomColor, uuidv4} from "../../Sugar";
 import {useRecoilValue} from "recoil/dist";
-import {TrackAtom} from "./Sequencer.r";
+import {LoopAtom} from "./Sequencer.rcl";
 import {H_PADDING, SequencerFooter} from "./SequencerFooter/SequencerFooter";
 
 // 1 -> q
@@ -44,7 +44,7 @@ function SoundSoundSound({name, keyboard}) {
 
     const onDown = useCallback(() => {
         setIsActive(true)
-        toneRef.current.triggerAttack("C2", "4t")
+        toneRef.current.triggerAttackRelease("C4", "4n")
     }, [setIsActive])
 
     const handleKeyDown = useCallback((event) => {
@@ -151,7 +151,7 @@ export function Sequencer() {
     const useTrackTitle = useState("Untitled Unmastered")
     const useBpm = useState(120)
     const useSwing = useState(0)
-    const track = useRecoilValue(TrackAtom)
+    const track = useRecoilValue(LoopAtom)
 
     console.log(track)
 
