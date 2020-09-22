@@ -127,7 +127,31 @@ const CanvasWrapper = styled.div`
   }
 `
 
-function ModifierKnob({state, setState, size, bufferSize, min, max, step}) {
+const Ring = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient( rgba(254,158,11,1) 0%, rgba(252,70,107,1) 100%);
+  left:0;
+  top: 0;
+  color: black;
+  border-radius: 50%; 
+`
+
+const CAP_SIZE = 11
+
+const LevelIndicator = styled.div`
+  position: absolute;
+  width: 10%;
+  height: 25%;
+  border-radius: 1px;
+  background-color: white;
+  top: ${CAP_SIZE}%;
+  left: 50%;
+  transform: translateX(-50%);
+`
+
+function GlowUpKnob({state, setState, size, bufferSize, min, max, step}) {
     return (
         <Knob
             value={state}
@@ -138,24 +162,39 @@ function ModifierKnob({state, setState, size, bufferSize, min, max, step}) {
             max={max}
             step={step}
         >
+            <Ring>
+                <LevelIndicator/>
+            </Ring>
         </Knob>
     )
-
 }
 
+const ModifierWrapper = styled.div`
+  position: relative;
+  padding-bottom: 20px;
+`
+
+const ModifierLabel = styled.div`
+  position: absolute;
+  white-space: nowrap;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+`
+
 function SampleModifierSections(props) {
-    const {label, useKnobState, size, min, max, step} = props
+    const {label, useKnobState, size, min, max, step, bufferSize} = props
     const [state, setState] = useKnobState
 
     return (
-        <div>
-            <ModifierKnob setState={setState}
-                          state={state}
-                          {...props}/>
-            <div>
+        <ModifierWrapper>
+            <GlowUpKnob setState={setState}
+                        state={state}
+                        {...props}/>
+            <ModifierLabel>
                 {label} {state}
-            </div>
-        </div>
+            </ModifierLabel>
+        </ModifierWrapper>
     )
 }
 
@@ -164,7 +203,6 @@ const SampleModifierWrapper = styled.div`
   left: 0;
   bottom: 0;
   width: 100%;
-  border: 1px solid pink;
   background-color: var(--base-background-color);
   z-index: 1;
   display: flex;
@@ -185,12 +223,14 @@ function SampleModifier() {
             <SampleModifierSections label={"Vol: "}
                                     useKnobState={[volume, setVolume]}
                                     size={MODIFIER_KNOB_SIZE}
+                                    bufferSize={300}
                                     min={0}
                                     max={100}
                                     step={1}
             />
             <SampleModifierSections label={"Pitch: "}
                                     useKnobState={[pitch, setPitch]}
+                                    bufferSize={300}
                                     size={MODIFIER_KNOB_SIZE}
                                     min={-12}
                                     max={12}

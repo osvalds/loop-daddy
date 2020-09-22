@@ -103,16 +103,13 @@ export class Knob extends React.Component {
 
     const rotationAmount =
       getNormalizedValue(value, min, max) * bufferSize - bufferSize / 2;
-    console.log(value)
+
     const styles = {
       wrapper: {
         position: "relative",
         borderRadius: "50%",
         height: size,
         width: size,
-        ":hover": {
-          cursor: "pointer",
-        },
       },
       knob: {
         position: "relative",
