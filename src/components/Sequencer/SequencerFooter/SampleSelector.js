@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from "react"
-import styled from "styled-components"
+import styled, {css} from "styled-components"
 import useSize from "../../../customHooks/useSize";
 import * as Tone from "tone";
 import WaveformData from "waveform-data";
-import {Knob} from "../../Knob/Knob";
+import {getNormalizedValue, Knob} from "../../Knob/Knob";
 
 const WaveformCanvasStyled = styled.canvas`
   cursor: pointer;
@@ -151,21 +151,75 @@ const LevelIndicator = styled.div`
   transform: translateX(-50%);
 `
 
+const MODIFIER_KNOB_SIZE = 24;
+
+const KnobWrapper = styled.div`
+  cursor: pointer;
+  position: relative;
+`
+
+const ValueMarkings = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+`
+
+const MARKING_COUNT = 20
+
+const Mark = styled.div.attrs(props => {
+    return {
+        style: {
+            width: `${props.$width}%`,
+            transform: `translateX(-50%) translateY(-50%) rotate(${props.$rotate + 180}deg) translateY(${MODIFIER_KNOB_SIZE - 7}px)`,
+            boxShadow: `${props.$active ? "1px 1px 10px 0px #fc466b" : "1px 1px 10px 0px #c7c7c7"}`
+        }
+    }
+})`
+        position: absolute;
+        height: 20%;
+        background: ${props => props.$active ? "#fc466b" : "#c7c7c7"};
+        top: 50%;
+        left: 50%;
+        z-index: 4;
+`
+
+
 function GlowUpKnob({state, setState, size, bufferSize, min, max, step}) {
+
+    const markings = Array(MARKING_COUNT).fill(0)
+    const p = Math.PI * 100
+    const markWidth = bufferSize / 360 * p / MARKING_COUNT
+    const distance = 3
+    const normalizedStateValue = getNormalizedValue(state, min, max)
+
     return (
-        <Knob
-            value={state}
-            onChange={setState}
-            size={size}
-            bufferSize={bufferSize}
-            min={min}
-            max={max}
-            step={step}
-        >
-            <Ring>
-                <LevelIndicator/>
-            </Ring>
-        </Knob>
+        <KnobWrapper>
+            <ValueMarkings>
+                {markings.map((item, idx) => {
+                    const marksNormalizedValue = getNormalizedValue(idx, 0, MARKING_COUNT)
+                    const rotationAmount = marksNormalizedValue * bufferSize - bufferSize / 2;
+                    return <Mark key={idx}
+                                 $width={markWidth - distance}
+                                 $active={marksNormalizedValue < normalizedStateValue}
+                                 $rotate={rotationAmount}
+                                 $distance={distance}
+                                 $idx={idx}/>
+                })}
+            </ValueMarkings>
+            <Knob
+                value={state}
+                onChange={setState}
+                size={size}
+                bufferSize={bufferSize}
+                min={min}
+                max={max}
+                step={step}
+            >
+                <Ring>
+                    <LevelIndicator/>
+                </Ring>
+            </Knob>
+        </KnobWrapper>
     )
 }
 
@@ -179,6 +233,7 @@ const ModifierLabel = styled.div`
   white-space: nowrap;
   left: 50%;
   bottom: 0;
+  font-size: 14px;
   transform: translateX(-50%);
 `
 
@@ -211,8 +266,6 @@ const SampleModifierWrapper = styled.div`
   color: white;
   padding: 8px;
 `
-
-const MODIFIER_KNOB_SIZE = 42
 
 function SampleModifier() {
     const [volume, setVolume] = useState(80)

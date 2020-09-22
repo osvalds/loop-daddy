@@ -14,7 +14,7 @@ function emptyKnobState() {
   };
 }
 
-function getNormalizedValue(value, min, max) {
+export function getNormalizedValue(value, min, max) {
   return (value - min) / (max - min);
 }
 
