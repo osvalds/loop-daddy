@@ -8,7 +8,7 @@ import {RecoilRoot} from "recoil/dist";
 const ContentWrapper = styled.div`
   height: 100%;
   display: flex;
-  background-color: #242525;
+  background-color: var(--base-background-color);
   flex-direction: column;
 `
 

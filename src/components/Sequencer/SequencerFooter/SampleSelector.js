@@ -3,6 +3,7 @@ import styled from "styled-components"
 import useSize from "../../../customHooks/useSize";
 import * as Tone from "tone";
 import WaveformData from "waveform-data";
+import {Knob} from "../../Knob/Knob";
 
 const WaveformCanvasStyled = styled.canvas`
   cursor: pointer;
@@ -126,29 +127,77 @@ const CanvasWrapper = styled.div`
   }
 `
 
-function ModifierKnob ({value, setValue}) {
-    return null
+function ModifierKnob({state, setState, size, bufferSize, min, max, step}) {
+    return (
+        <Knob
+            value={state}
+            onChange={setState}
+            size={size}
+            bufferSize={bufferSize}
+            min={min}
+            max={max}
+            step={step}
+        >
+        </Knob>
+    )
+
 }
 
-function SampleModifierSections({label, knobValue}) {
+function SampleModifierSections(props) {
+    const {label, useKnobState, size, min, max, step} = props
+    const [state, setState] = useKnobState
+
     return (
         <div>
-            <ModifierKnob/>
+            <ModifierKnob setState={setState}
+                          state={state}
+                          {...props}/>
             <div>
-                {label} {knobValue}
+                {label} {state}
             </div>
         </div>
     )
 }
 
+const SampleModifierWrapper = styled.div`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  border: 1px solid pink;
+  background-color: var(--base-background-color);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  color: white;
+  padding: 8px;
+`
+
+const MODIFIER_KNOB_SIZE = 42
+
 function SampleModifier() {
     const [volume, setVolume] = useState(80)
     const [pitch, setPitch] = useState(0)
 
-    return <div style={{color: "white"}}>
-        Vol: {volume}
-        Pitch: {pitch}
-    </div>
+    return (
+        <SampleModifierWrapper>
+            <SampleModifierSections label={"Vol: "}
+                                    useKnobState={[volume, setVolume]}
+                                    size={MODIFIER_KNOB_SIZE}
+                                    min={0}
+                                    max={100}
+                                    step={1}
+            />
+            <SampleModifierSections label={"Pitch: "}
+                                    useKnobState={[pitch, setPitch]}
+                                    size={MODIFIER_KNOB_SIZE}
+                                    min={-12}
+                                    max={12}
+                                    step={1}
+            />
+        </SampleModifierWrapper>
+    )
 }
 
 export function SampleSelector() {

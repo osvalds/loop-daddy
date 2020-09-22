@@ -1,7 +1,8 @@
 // Original source: https://github.com/vincentriemer/io-808/blob/master/src/components/knob/index.js
 import React from "react";
 import { BASE_HEIGHT } from "./constants";
-import KnobOverlay from "./KnobOverlay";
+import {KnobOverlay} from "./KnobOverlay";
+import {snap} from "../../Sugar";
 
 function emptyKnobState() {
   return {
@@ -17,7 +18,7 @@ function getNormalizedValue(value, min, max) {
   return (value - min) / (max - min);
 }
 
-class Knob extends React.Component {
+export class Knob extends React.Component {
   constructor(props) {
     super(props);
     this.state = emptyKnobState();
@@ -52,7 +53,6 @@ class Knob extends React.Component {
 
     const { min, max, step } = this.props;
     const unnormalizedValue = snap(normalizedValue * (max - min), step, min);
-
     this.setState({ topPosition, scale, cursorPos });
     if (unnormalizedValue !== this.props.value) {
       this.props.onChange(unnormalizedValue);
@@ -103,7 +103,7 @@ class Knob extends React.Component {
 
     const rotationAmount =
       getNormalizedValue(value, min, max) * bufferSize - bufferSize / 2;
-
+    console.log(value)
     const styles = {
       wrapper: {
         position: "relative",
@@ -138,4 +138,3 @@ class Knob extends React.Component {
     );
   }
 }
-
