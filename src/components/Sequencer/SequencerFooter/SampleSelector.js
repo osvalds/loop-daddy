@@ -63,12 +63,18 @@ const drawWaveform = (ctx, waveform, canvasSize) => {
     ctx.fill();
 }
 
+const SampleTime = styled.div`
+  position: absolute;
+  font-size: 14px;
+  color: white;
+  z-index: 1;
+`
+
 function WaveformCanvas({size, name = "808-bd14"}) {
     const {width, height} = size
     const canvasRef = useRef(null)
     const samplerRef = useRef(null)
     const audioBufferRef = useRef(null)
-    // const [isReady, setIsready] = useState(false)
 
     useEffect(() => {
         const ctx = canvasRef.current.getContext("2d")
@@ -91,8 +97,9 @@ function WaveformCanvas({size, name = "808-bd14"}) {
                 });
                 samplerRef.current = new Tone.Sampler({"C4": buffer}).toDestination()
             })
-    }, [])
+    }, [name, width, size])
 
+    // console.log(samplerRef.current)
     return (
         <>
             <WaveformCanvasStyled ref={canvasRef}
@@ -103,6 +110,7 @@ function WaveformCanvas({size, name = "808-bd14"}) {
                                       }
                                   }}
                                   height={height}/>
+            <SampleTime>{samplerRef.current?.sampleTime}</SampleTime>
         </>
     )
 }
@@ -118,6 +126,30 @@ const CanvasWrapper = styled.div`
   }
 `
 
+function ModifierKnob ({value, setValue}) {
+    return null
+}
+
+function SampleModifierSections({label, knobValue}) {
+    return (
+        <div>
+            <ModifierKnob/>
+            <div>
+                {label} {knobValue}
+            </div>
+        </div>
+    )
+}
+
+function SampleModifier() {
+    const [volume, setVolume] = useState(80)
+    const [pitch, setPitch] = useState(0)
+
+    return <div style={{color: "white"}}>
+        Vol: {volume}
+        Pitch: {pitch}
+    </div>
+}
 
 export function SampleSelector() {
     const wrapperRef = useRef(null)
@@ -126,6 +158,7 @@ export function SampleSelector() {
     return (
         <CanvasWrapper ref={wrapperRef}>
             {size && <WaveformCanvas size={size}/>}
+            <SampleModifier/>
         </CanvasWrapper>
     )
 }

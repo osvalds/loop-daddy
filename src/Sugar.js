@@ -22,3 +22,8 @@ export function uuidv4() {
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
 }
+
+// https://github.com/vincentriemer/io-808/blob/master/src/helpers.js
+export function snap(number, increment, offset) {
+    return Math.round(number / increment) * increment + offset;
+}
