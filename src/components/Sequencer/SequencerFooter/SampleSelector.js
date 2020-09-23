@@ -164,46 +164,48 @@ const ValueMarkings = styled.div`
   height: 100%;
 `
 
-const MARKING_COUNT = 20
+
+const MARKING_COUNT = (midAligned = false) => midAligned ? 21 : 20;
 
 const Mark = styled.div.attrs(props => {
     return {
         style: {
             width: `${props.$width}%`,
-            transform: `translateX(-50%) translateY(-50%) rotate(${props.$rotate + 180}deg) translateY(${MODIFIER_KNOB_SIZE - 7}px)`,
-            boxShadow: `${props.$active ? "1px 1px 10px 0px #fc466b" : "1px 1px 10px 0px #c7c7c7"}`
+            transform: `translateX(-50%) translateY(-50%) rotate(${props.$rotate + 180}deg) translateY(${MODIFIER_KNOB_SIZE - 7}px)`
         }
     }
 })`
         position: absolute;
         height: 20%;
         background: ${props => props.$active ? "#fc466b" : "#c7c7c7"};
+        box-shadow:  ${props => props.$active ? "1px 1px 10px 0px #fc466b" : "1px 1px 10px 0px #c7c7c7"};
         top: 50%;
         left: 50%;
         z-index: 4;
 `
 
 
-function GlowUpKnob({state, setState, size, bufferSize, min, max, step}) {
-
-    const markings = Array(MARKING_COUNT).fill(0)
+function GlowUpKnob({state, setState, size, bufferSize, min, max, step, middleAligned}) {
+    const markingCount = MARKING_COUNT(middleAligned)
+    const markings = Array(markingCount).fill(0)
     const p = Math.PI * 100
-    const markWidth = bufferSize / 360 * p / MARKING_COUNT
+    const markWidth = bufferSize / 360 * p / markingCount
     const distance = 3
-    const normalizedStateValue = getNormalizedValue(state, min, max)
+    // the -1 lets fill in the last mark. Because it's purely cosmetic, ill leave this relatively smelly thing.
+    const normalizedStateValue = getNormalizedValue(state, min, max - 1)
 
     return (
         <KnobWrapper>
             <ValueMarkings>
                 {markings.map((item, idx) => {
-                    const marksNormalizedValue = getNormalizedValue(idx, 0, MARKING_COUNT)
+                    const marksNormalizedValue = getNormalizedValue(idx, 0, markingCount - 1)
                     const rotationAmount = marksNormalizedValue * bufferSize - bufferSize / 2;
+
                     return <Mark key={idx}
                                  $width={markWidth - distance}
                                  $active={marksNormalizedValue < normalizedStateValue}
                                  $rotate={rotationAmount}
-                                 $distance={distance}
-                                 $idx={idx}/>
+                                 $distance={distance}/>
                 })}
             </ValueMarkings>
             <Knob
@@ -238,7 +240,7 @@ const ModifierLabel = styled.div`
 `
 
 function SampleModifierSections(props) {
-    const {label, useKnobState, size, min, max, step, bufferSize} = props
+    const {label, useKnobState, size, min, max, step, bufferSize, middleAligned} = props
     const [state, setState] = useKnobState
 
     return (
@@ -285,6 +287,7 @@ function SampleModifier() {
                                     useKnobState={[pitch, setPitch]}
                                     bufferSize={300}
                                     size={MODIFIER_KNOB_SIZE}
+                                    middleAligned={true}
                                     min={-12}
                                     max={12}
                                     step={1}
