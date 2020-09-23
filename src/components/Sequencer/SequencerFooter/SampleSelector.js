@@ -71,7 +71,7 @@ const SampleTime = styled.div`
   z-index: 1;
 `
 
-function WaveformCanvas({size, name = "808-bd14"}) {
+function WaveformCanvas({size, name = "SD/SD1000.WAV"}) {
     const {width, height} = size
     const canvasRef = useRef(null)
     const samplerRef = useRef(null)
@@ -79,8 +79,7 @@ function WaveformCanvas({size, name = "808-bd14"}) {
 
     useEffect(() => {
         const ctx = canvasRef.current.getContext("2d")
-
-        audioBufferRef.current = new Tone.ToneAudioBuffer(`${process.env.PUBLIC_URL}/drums/808/${name}.wav`,
+        audioBufferRef.current = new Tone.ToneAudioBuffer(`${process.env.PUBLIC_URL}/drums/${name}`,
             (buffer) => {
                 const audioBuffer = buffer.get()
                 const options = {
