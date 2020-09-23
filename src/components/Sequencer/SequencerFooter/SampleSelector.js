@@ -25,7 +25,6 @@ const scaleY = (amplitude, height) => {
 const getGradient = (ctx, lighterColor, darkerColor) => {
     let gradient = ctx.createLinearGradient(0, 0, 200, 0);
 
-
     gradient.addColorStop(.6, darkerColor)
     gradient.addColorStop(.2, lighterColor)
 
@@ -138,8 +137,9 @@ const ModifierLabel = styled.div`
   white-space: nowrap;
   left: 50%;
   bottom: 0;
-  font-size: 14px;
+  font-size: 12px;
   transform: translateX(-50%);
+  user-select: none;
 `
 
 function SampleModifierSections(props) {
