@@ -64,24 +64,21 @@ const drawWaveform = (ctx, waveform, canvasSize) => {
     ctx.fill();
 }
 
-const SampleTime = styled.div`
-  position: absolute;
-  font-size: 14px;
-  color: white;
-  z-index: 1;
-`
-
-function WaveformCanvas({size, name = "SD/SD1000.WAV"}) {
+function WaveformCanvas({size, name = "BD/BD7510.WAV", pitch = 0, volume}) {
     const {width, height} = size
     const canvasRef = useRef(null)
     const samplerRef = useRef(null)
     const audioBufferRef = useRef(null)
+    const bufferDuration = useRef(0)
+    const note = Tone.Frequency("C4").transpose(pitch)
 
     useEffect(() => {
+        console.log("effect running")
         const ctx = canvasRef.current.getContext("2d")
         audioBufferRef.current = new Tone.ToneAudioBuffer(`${process.env.PUBLIC_URL}/drums/${name}`,
             (buffer) => {
                 const audioBuffer = buffer.get()
+                bufferDuration.current = audioBuffer.duration
                 const options = {
                     audio_buffer: audioBuffer,
                     scale: Math.floor(audioBuffer.length / width),
@@ -95,23 +92,19 @@ function WaveformCanvas({size, name = "SD/SD1000.WAV"}) {
                         drawWaveform(ctx, waveform, size)
                     }
                 });
+
                 samplerRef.current = new Tone.Sampler({"C4": buffer}).toDestination()
             })
     }, [name, width, size])
-
-    // console.log(samplerRef.current)
     return (
-        <>
-            <WaveformCanvasStyled ref={canvasRef}
-                                  width={width}
-                                  onClick={() => {
-                                      if (samplerRef.current?.loaded) {
-                                          samplerRef.current.triggerAttack("C4")
-                                      }
-                                  }}
-                                  height={height}/>
-            <SampleTime>{samplerRef.current?.sampleTime}</SampleTime>
-        </>
+        <WaveformCanvasStyled ref={canvasRef}
+                              width={width}
+                              onClick={() => {
+                                  if (samplerRef.current?.loaded) {
+                                      samplerRef.current.triggerAttack(note, Tone.now(), volume / 100)
+                                  }
+                              }}
+                              height={height}/>
     )
 }
 
@@ -176,9 +169,9 @@ const SampleModifierWrapper = styled.div`
   padding: 8px;
 `
 
-function SampleModifier() {
-    const [volume, setVolume] = useState(80)
-    const [pitch, setPitch] = useState(0)
+function SampleModifier({useVolume, usePitch}) {
+    const [volume, setVolume] = useVolume
+    const [pitch, setPitch] = usePitch
 
     return (
         <SampleModifierWrapper>
@@ -206,11 +199,16 @@ function SampleModifier() {
 export function SampleSelector() {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
+    const [volume, setVolume] = useState(80)
+    const [pitch, setPitch] = useState(0)
 
     return (
         <CanvasWrapper ref={wrapperRef}>
-            {size && <WaveformCanvas size={size}/>}
-            <SampleModifier/>
+            {size && <WaveformCanvas size={size}
+                                     volume={volume}
+                                     pitch={pitch}/>}
+            <SampleModifier usePitch={[pitch, setPitch]}
+                            useVolume={[volume, setVolume]}/>
         </CanvasWrapper>
     )
 }
