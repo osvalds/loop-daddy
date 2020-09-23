@@ -102,7 +102,7 @@ export class KnobOverlay extends React.Component {
         transform:
           `translateX(${
             cursorPos[0]
-          }px) translateY(${topPosition}px) translateZ(0) ` + `scaleX(12)`,
+          }px) translateY(${topPosition}px) translateZ(0) scaleX(12)`,
       },
 
       centerPath: {
