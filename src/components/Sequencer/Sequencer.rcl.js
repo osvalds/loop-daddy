@@ -3,9 +3,9 @@ import {atom, selector, selectorFamily} from "recoil";
 
 export const Tracks_ = atom({
     key: "tracks",
-    tracks: [
+    default: [
         {
-            color: getRandomColor(),
+            colors: getRandomColor(),
             muted: false,
             title: "Kick 1",
             notes: [[0.8, true, "C4", 1, 100],

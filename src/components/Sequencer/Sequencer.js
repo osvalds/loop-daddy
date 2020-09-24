@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import * as Tone from "tone";
-import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
-import {SequencerTrack} from "./SequencerTracks";
+import {BORDER_RADIUS, ControlButton, SequencerHeader} from "./SequencerHeader/SequencerHeader";
+import {SequencerTrack, SequencerTracks} from "./SequencerTracks";
 import {useRecoilValue} from "recoil";
 import {Loop_} from "./Sequencer.rcl";
 import {H_PADDING, SequencerFooter} from "./SequencerFooter/SequencerFooter";
@@ -141,8 +141,12 @@ const SequencerWrapper = styled.section`
   padding: 0 ${H_PADDING}px;
 `
 
-const AddTrack = styled.button`
-  
+const AddTrack = styled(ControlButton)`
+  color: white;
+  width: 250px;
+  margin: 12px 0;
+  font-size: 16px;
+  border-radius: ${BORDER_RADIUS}px;
 `
 
 export function Sequencer() {
@@ -153,9 +157,9 @@ export function Sequencer() {
         <SequencerWrapper>
             {/*<Launchpad samples={samples}/>*/}
             <SequencerHeader/>
-            <SequencerTrack/>
+            <SequencerTracks/>
             <AddTrack>
-                +
+                Add new Track +
             </AddTrack>
             <SequencerFooter/>
         </SequencerWrapper>

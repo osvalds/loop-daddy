@@ -4,8 +4,14 @@ import useSize from "../../../customHooks/useSize";
 import * as Tone from "tone";
 import WaveformData from "waveform-data";
 import {GlowUpKnob, MidpointGlowUpKnob, MODIFIER_KNOB_SIZE} from "../../Knob/GlowupKnob";
-import {useRecoilValue} from "recoil";
-import {SampleList_} from "../Samples/Samples.rcl";
+import {useRecoilValue, useRecoilState} from "recoil";
+import {
+    SelectedSampleFile_,
+    SelectedSampleType_,
+    SampleList_,
+    SelectedSample_,
+    samplesList
+} from "../Samples/Samples.rcl";
 
 const WaveformCanvasStyled = styled.canvas`
   cursor: pointer;
@@ -65,20 +71,25 @@ const drawWaveform = (ctx, waveform, canvasSize) => {
     ctx.fill();
 }
 
+const getSamplePath = (selectedSample) => {
+    const folder = samplesList.find(sg => selectedSample.type === sg.uid).path
+    return `${process.env.PUBLIC_URL}/drums${folder}${selectedSample.sample}`
+}
+
 function WaveformCanvas({size, name = "OH/OH00.WAV", pitch = 0, volume}) {
+    const selectedSample = useRecoilValue(SelectedSample_)
+    const path = getSamplePath(selectedSample)
     const {width, height} = size
     const canvasRef = useRef(null)
     const samplerRef = useRef(null)
     const audioBufferRef = useRef(null)
-    const bufferDuration = useRef(0)
     const note = Tone.Frequency("C4").transpose(pitch)
 
     useEffect(() => {
         const ctx = canvasRef.current.getContext("2d")
-        audioBufferRef.current = new Tone.ToneAudioBuffer(`${process.env.PUBLIC_URL}/drums/${name}`,
+        audioBufferRef.current = new Tone.ToneAudioBuffer(path,
             (buffer) => {
                 const audioBuffer = buffer.get()
-                bufferDuration.current = audioBuffer.duration
                 const options = {
                     audio_buffer: audioBuffer,
                     scale: Math.floor(audioBuffer.length / width),
@@ -95,7 +106,7 @@ function WaveformCanvas({size, name = "OH/OH00.WAV", pitch = 0, volume}) {
 
                 samplerRef.current = new Tone.Sampler({"C4": buffer}).toDestination()
             })
-    }, [name, width, size])
+    }, [path, width, size])
     return (
         <WaveformCanvasStyled ref={canvasRef}
                               width={width}
@@ -158,9 +169,8 @@ function SampleModifierSections(props) {
 const SampleModifierWrapper = styled.div`
   position: absolute;
   left: 0;
-  bottom: 0;
+  top: 8px;
   width: 100%;
-  background-color: var(--base-background-color);
   z-index: 1;
   display: flex;
   align-items: center;
@@ -201,18 +211,34 @@ const ChangeSampleWrapper = styled.div`
   width: 100%;
   z-index: 1;
   left: 0;
-  top: 0;
+  bottom: 0;
   color: white;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 `
 
 function ChangeSample() {
     const samples = useRecoilValue(SampleList_)
+    const [selectedSampleType, setSelectedSampleType] = useRecoilState(SelectedSampleType_)
+    const [selectedSample, setSelectedSample] = useRecoilState(SelectedSampleFile_)
+    const sampleFileList = samples.find(sg => sg.uid === selectedSampleType).samples
 
-
-    console.log(samples)
     return (
         <ChangeSampleWrapper>
-            Sample selectors
+            <select value={selectedSampleType} onChange={(e) => setSelectedSampleType(e.target.value)}>
+                {samples.map(sampleGroup => {
+                    return <option key={sampleGroup.path} value={sampleGroup.uid}>
+                        {sampleGroup.title}
+                    </option>
+                })}
+            </select>
+            <select value={selectedSample} onChange={(e) => setSelectedSample(e.target.value)}>
+                {sampleFileList.map(sample => {
+                    return <option key={sample} value={sample}>
+                        {sample}
+                    </option>
+                })}
+            </select>
         </ChangeSampleWrapper>
     )
 }
@@ -225,12 +251,13 @@ export function SampleSelector() {
 
     return (
         <CanvasWrapper ref={wrapperRef}>
-            <ChangeSample/>
+            <SampleModifier usePitch={[pitch, setPitch]}
+                            useVolume={[volume, setVolume]}/>
+
             {size && <WaveformCanvas size={size}
                                      volume={volume}
                                      pitch={pitch}/>}
-            <SampleModifier usePitch={[pitch, setPitch]}
-                            useVolume={[volume, setVolume]}/>
+            <ChangeSample/>
         </CanvasWrapper>
     )
 }

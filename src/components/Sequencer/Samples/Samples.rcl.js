@@ -1,16 +1,11 @@
-import {atom} from "recoil";
+import {atom, selector} from "recoil";
 
-const samplesList = [
+export const samplesList = [
     {
         title: "Bass Drum",
+        uid: "bd",
         path: "/BD/",
         samples: [
-            "BD0000.WAV",
-            "BD0010.WAV",
-            "BD0025.WAV",
-            "BD0050.WAV",
-            "BD0075.WAV",
-            "BD1000.WAV",
             "BD1010.WAV",
             "BD1025.WAV",
             "BD1050.WAV",
@@ -35,6 +30,7 @@ const samplesList = [
 
     {
         title: "Snare Drum ",
+        uid: "sd",
         path: "/SD/",
         samples: [
             "SD0000.WAV",
@@ -67,6 +63,7 @@ const samplesList = [
 
     {
         title: "Tom",
+        uid: "tm",
         path: "/TM/",
         samples: [
             "HT00.WAV",
@@ -89,6 +86,7 @@ const samplesList = [
 
     {
         title: "Conga",
+        uid: "cg",
         path: "/CG/",
         samples: [
             "HC00.WAV",
@@ -111,6 +109,7 @@ const samplesList = [
 
     {
         title: "Rim Shot",
+        uid: "rs",
         path: "/RS/",
         samples: [
             "RS00.WAV",
@@ -121,6 +120,7 @@ const samplesList = [
 
     {
         title: "Claves",
+        uid: "cl",
         path: "/CL/",
         samples: [
             "CL00.WAV",
@@ -129,6 +129,7 @@ const samplesList = [
 
     {
         title: "Hand Clap",
+        uid: "hc",
         path: "/CP/",
         samples: [
             "CP00.WAV",
@@ -138,6 +139,7 @@ const samplesList = [
 
     {
         title: "Maracas",
+        uid: "mc",
         path: "/MA/",
         samples: [
             "MA00.WAV",
@@ -147,6 +149,7 @@ const samplesList = [
 
     {
         title: "Cowbell",
+        uid: "cb",
         path: "/CB/",
         samples: [
             "CB00.WAV"
@@ -155,6 +158,7 @@ const samplesList = [
 
     {
         title: "Cymbal",
+        uid: "cy",
         path: "/CY/",
         samples: [
             "CY0000.WAV",
@@ -187,6 +191,7 @@ const samplesList = [
 
     {
         title: "Open Hi Hat",
+        uid: "oh",
         path: "/OH/",
         samples: [
             "OH00.WAV",
@@ -199,6 +204,7 @@ const samplesList = [
 
     {
         title: "Closed Hi Hat",
+        uid: "ch",
         path: "/CH/",
         samples: [
             "CH00.WAV",
@@ -209,6 +215,36 @@ const samplesList = [
 ]
 
 export const SampleList_ = atom({
-    id: "SampleList",
+    key: "SampleList",
     default: samplesList
+})
+
+export const SelectedSample_ = atom({
+    key: "selectedSample",
+    default: {
+        type: samplesList[0].uid,
+        sample: samplesList[0].samples[0]
+    }
+})
+
+export const SelectedSampleType_ = selector({
+    key: "selectedSampleType",
+    get: ({get}) => get(SelectedSample_).type,
+    set: ({get, set}, val) => {
+        const sampleType = samplesList.find(s => s.uid === val)
+
+        set(SelectedSample_, {
+            type: val,
+            sample: sampleType.samples[0]
+        })
+    }
+})
+
+export const SelectedSampleFile_ = selector({
+    key: "selectedSampleFile",
+    get: ({get}) => get(SelectedSample_).sample,
+    set: ({get, set}, val) => {
+        const selected = get(SelectedSample_)
+        set(SelectedSample_, {...selected, sample: val})
+    }
 })

@@ -12,9 +12,9 @@ import {
     LoopSelector_
 } from "../Sequencer.rcl";
 
-const BORDER_RADIUS = 8;
+export const BORDER_RADIUS = 8;
 
-const ControlButton = styled.button`
+export const ControlButton = styled.button`
   border: none;
   padding: 8px 24px;
   background: hsl(240, 4%, 9%);
