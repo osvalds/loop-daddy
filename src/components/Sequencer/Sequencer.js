@@ -4,7 +4,7 @@ import * as Tone from "tone";
 import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
 import {SequencerTrack} from "./SequencerTracks";
 import {getRandomColor, uuidv4} from "../../Sugar";
-import {useRecoilValue} from "recoil/dist";
+import {useRecoilValue} from "recoil";
 import {LoopAtom} from "./Sequencer.rcl";
 import {H_PADDING, SequencerFooter} from "./SequencerFooter/SequencerFooter";
 

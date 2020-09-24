@@ -5,6 +5,8 @@ import * as Tone from "tone";
 import WaveformData from "waveform-data";
 import {getNormalizedValue, Knob} from "../../Knob/Knob";
 import {GlowUpKnob, MidpointGlowUpKnob, MODIFIER_KNOB_SIZE} from "../../Knob/GlowupKnob";
+import {useRecoilValue} from "recoil";
+import {SampleList_} from "../Samples/Samples.rcl";
 
 const WaveformCanvasStyled = styled.canvas`
   cursor: pointer;
@@ -64,7 +66,7 @@ const drawWaveform = (ctx, waveform, canvasSize) => {
     ctx.fill();
 }
 
-function WaveformCanvas({size, name = "BD/BD7510.WAV", pitch = 0, volume}) {
+function WaveformCanvas({size, name = "OH/OH00.WAV", pitch = 0, volume}) {
     const {width, height} = size
     const canvasRef = useRef(null)
     const samplerRef = useRef(null)
@@ -196,6 +198,16 @@ function SampleModifier({useVolume, usePitch}) {
     )
 }
 
+function SampleDropDown() {
+    const samples = useRecoilValue(SampleList_)
+
+    return (
+        <div>
+            Sample selector
+        </div>
+    )
+}
+
 export function SampleSelector() {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
@@ -204,6 +216,7 @@ export function SampleSelector() {
 
     return (
         <CanvasWrapper ref={wrapperRef}>
+            <SampleDropDown/>
             {size && <WaveformCanvas size={size}
                                      volume={volume}
                                      pitch={pitch}/>}

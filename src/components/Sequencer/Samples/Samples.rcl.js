@@ -208,4 +208,7 @@ const samplesList = [
     },
 ]
 
-const SamplesAtom = atom({})
+export const SampleList_ = atom({
+    id: "SampleList",
+    default: samplesList
+})

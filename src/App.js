@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {useUnlockAudio} from "./customHooks/useUnlockListener";
 import {Header} from "./components/Header/Header";
 import {Sequencer} from "./components/Sequencer/Sequencer";
-import {RecoilRoot} from "recoil/dist";
+import {RecoilRoot} from "recoil";
 
 const ContentWrapper = styled.div`
   height: 100%;

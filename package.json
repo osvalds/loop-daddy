@@ -11,7 +11,7 @@
     "react-compound-slider": "^2.5.0",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "recoil": "^0.0.10",
+    "recoil": "^0.0.13",
     "styled-components": "^5.1.1",
     "tone": "^14.7.39",
     "waveform-data": "^3.3.4"
