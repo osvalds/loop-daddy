@@ -5,7 +5,7 @@ import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
 import {SequencerTrack} from "./SequencerTracks";
 import {getRandomColor, uuidv4} from "../../Sugar";
 import {useRecoilValue} from "recoil";
-import {LoopAtom} from "./Sequencer.rcl";
+import {Loop_} from "./Sequencer.rcl";
 import {H_PADDING, SequencerFooter} from "./SequencerFooter/SequencerFooter";
 
 // 1 -> q
@@ -151,13 +151,13 @@ export function Sequencer() {
     const useTrackTitle = useState("Untitled Unmastered")
     const useBpm = useState(120)
     const useSwing = useState(0)
-    const track = useRecoilValue(LoopAtom)
+    const track = useRecoilValue(Loop_)
 
-    console.log(track)
+    // console.log(track)
 
     return (
         <SequencerWrapper>
-            <Launchpad samples={samples}/>!
+            {/*<Launchpad samples={samples}/>*/}
             <SequencerHeader useTrackTitle={useTrackTitle}
                              useBpm={useBpm}
                              useSwing={useSwing}/>

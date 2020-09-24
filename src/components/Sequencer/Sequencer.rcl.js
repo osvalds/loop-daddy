@@ -1,7 +1,8 @@
 import {getRandomColor, uuidv4} from "../../Sugar";
 import {atom} from "recoil";
 
-export const TracksAtom = atom({
+export const Tracks_ = atom({
+    key: "tracks",
     tracks: [
         {
             color: getRandomColor(),
@@ -22,7 +23,7 @@ export const TracksAtom = atom({
     ]
 })
 
-export const LoopAtom = atom({
+export const Loop_ = atom({
     key: "loopDaddyTrack",
     default: {
         bpm: 128,

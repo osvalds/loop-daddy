@@ -3,7 +3,6 @@ import styled, {css} from "styled-components"
 import useSize from "../../../customHooks/useSize";
 import * as Tone from "tone";
 import WaveformData from "waveform-data";
-import {getNormalizedValue, Knob} from "../../Knob/Knob";
 import {GlowUpKnob, MidpointGlowUpKnob, MODIFIER_KNOB_SIZE} from "../../Knob/GlowupKnob";
 import {useRecoilValue} from "recoil";
 import {SampleList_} from "../Samples/Samples.rcl";
@@ -75,7 +74,6 @@ function WaveformCanvas({size, name = "OH/OH00.WAV", pitch = 0, volume}) {
     const note = Tone.Frequency("C4").transpose(pitch)
 
     useEffect(() => {
-        console.log("effect running")
         const ctx = canvasRef.current.getContext("2d")
         audioBufferRef.current = new Tone.ToneAudioBuffer(`${process.env.PUBLIC_URL}/drums/${name}`,
             (buffer) => {
@@ -198,13 +196,24 @@ function SampleModifier({useVolume, usePitch}) {
     )
 }
 
-function SampleDropDown() {
+const ChangeSampleWrapper = styled.div`
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  color: white;
+`
+
+function ChangeSample() {
     const samples = useRecoilValue(SampleList_)
 
+
+    console.log(samples)
     return (
-        <div>
+        <ChangeSampleWrapper>
             Sample selector
-        </div>
+        </ChangeSampleWrapper>
     )
 }
 
@@ -216,7 +225,7 @@ export function SampleSelector() {
 
     return (
         <CanvasWrapper ref={wrapperRef}>
-            <SampleDropDown/>
+            <ChangeSample/>
             {size && <WaveformCanvas size={size}
                                      volume={volume}
                                      pitch={pitch}/>}
