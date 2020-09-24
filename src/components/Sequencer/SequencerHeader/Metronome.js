@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react"
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled, {css, keyframes} from "styled-components"
 import {ReactComponent as MetronomeIcon} from "./icons/metronome.svg";
 import * as Tone from "tone"

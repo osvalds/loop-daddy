@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import { useState } from "react";
 import {ReactComponent as MuteIcon} from "./SequencerHeader/icons/mute.svg";
 import {ReactComponent as VolumeIcon} from "./SequencerHeader/icons/volume.svg";
 import styled from "styled-components";

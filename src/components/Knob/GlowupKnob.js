@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import {getNormalizedValue, Knob} from "./Knob";
-import React from "react";
 
 const CAP_SIZE = 11
 export const MODIFIER_KNOB_SIZE = 24;

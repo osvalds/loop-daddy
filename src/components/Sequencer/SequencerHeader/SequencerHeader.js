@@ -1,5 +1,5 @@
 import {TextToInput} from "../../TextToInput";
-import React, {useState} from "react";
+import { useState } from "react";
 import styled, {css, keyframes} from "styled-components"
 import {ReactComponent as PlayIcon} from "./icons/play.svg";
 import {ReactComponent as PauseIcon} from "./icons/pause.svg";

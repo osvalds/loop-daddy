@@ -1,4 +1,3 @@
-import React from 'react';
 import {Slider, Rail, Handles, Tracks} from 'react-compound-slider';
 import {SliderRail, Handle, Track} from './HorizontalSliderCompontents';
 

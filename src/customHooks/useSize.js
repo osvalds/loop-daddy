@@ -1,10 +1,10 @@
-import React from "react";
+import { useState, useLayoutEffect } from "react";
 import useResizeObserver from "@react-hook/resize-observer";
 
 export default function useSize(target) {
-    const [size, setSize] = React.useState(null)
+    const [size, setSize] = useState(null)
 
-    React.useLayoutEffect(() => {
+    useLayoutEffect(() => {
         setSize(target.current.getBoundingClientRect())
     }, [target])
 

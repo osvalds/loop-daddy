@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from "styled-components";
 import {useUnlockAudio} from "./customHooks/useUnlockListener";
 import {Header} from "./components/Header/Header";

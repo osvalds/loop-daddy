@@ -1,5 +1,5 @@
 // Original source: https://github.com/vincentriemer/io-808/blob/master/src/components/knob/index.js
-import React from "react";
+import { Component } from "react";
 import { BASE_HEIGHT } from "./constants";
 import {KnobOverlay} from "./KnobOverlay";
 import {snap} from "../../Sugar";
@@ -18,7 +18,7 @@ export function getNormalizedValue(value, min, max) {
   return (value - min) / (max - min);
 }
 
-export class Knob extends React.Component {
+export class Knob extends Component {
   constructor(props) {
     super(props);
     this.state = emptyKnobState();

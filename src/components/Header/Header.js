@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import { useState } from "react";
 import {ReactComponent as Kimono} from "./Icons/kimono.svg";
 import {ReactComponent as GitHubLogo} from "./Icons/gh.svg";
 import styled, {keyframes} from "styled-components"

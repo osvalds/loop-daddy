@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react"
+import {useEffect, useRef, useState} from "react"
 import styled, {css} from "styled-components"
 import useSize from "../../../customHooks/useSize";
 import * as Tone from "tone";

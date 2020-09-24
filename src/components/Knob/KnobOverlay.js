@@ -1,6 +1,6 @@
 // Original source: https://github.com/vincentriemer/io-808/blob/master/src/components/overlay/index.js
 
-import React from "react";
+import { Component } from "react";
 import ReactDOM from "react-dom"
 import { BASE_HEIGHT } from "./constants";
 
@@ -13,7 +13,7 @@ function cartesian2Polar([x1, y1], [x2, y2]) {
   return { distance, degrees };
 }
 
-export class KnobOverlayPortal extends React.Component {
+export class KnobOverlayPortal extends Component {
   constructor(props) {
     super(props);
     this.el = document.createElement("div");
@@ -32,7 +32,7 @@ export class KnobOverlayPortal extends React.Component {
   }
 }
 
-export class KnobOverlay extends React.Component {
+export class KnobOverlay extends Component {
   constructor(props) {
     super(props);
     this.state = {

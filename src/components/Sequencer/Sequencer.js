@@ -1,9 +1,8 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import * as Tone from "tone";
 import {SequencerHeader} from "./SequencerHeader/SequencerHeader";
 import {SequencerTrack} from "./SequencerTracks";
-import {getRandomColor, uuidv4} from "../../Sugar";
 import {useRecoilValue} from "recoil";
 import {Loop_} from "./Sequencer.rcl";
 import {H_PADDING, SequencerFooter} from "./SequencerFooter/SequencerFooter";
