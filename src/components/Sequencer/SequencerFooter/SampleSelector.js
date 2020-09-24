@@ -10,7 +10,7 @@ import {
     SelectedSampleType_,
     SampleList_,
     SelectedSample_,
-    samplesList
+    samplesList, SelectedSamplePitch_, SelectedSampleVolume_
 } from "../Samples/Samples.rcl";
 
 const WaveformCanvasStyled = styled.canvas`
@@ -76,8 +76,10 @@ const getSamplePath = (selectedSample) => {
     return `${process.env.PUBLIC_URL}/drums${folder}${selectedSample.sample}`
 }
 
-function WaveformCanvas({size, name = "OH/OH00.WAV", pitch = 0, volume}) {
+function WaveformCanvas({size, name = "OH/OH00.WAV"}) {
     const selectedSample = useRecoilValue(SelectedSample_)
+    const volume = useRecoilValue(SelectedSampleVolume_)
+    const pitch = useRecoilValue(SelectedSamplePitch_)
     const path = getSamplePath(selectedSample)
     const {width, height} = size
     const canvasRef = useRef(null)
@@ -179,9 +181,9 @@ const SampleModifierWrapper = styled.div`
   padding: 8px;
 `
 
-function SampleModifier({useVolume, usePitch}) {
-    const [volume, setVolume] = useVolume
-    const [pitch, setPitch] = usePitch
+function SampleModifier() {
+    const [volume, setVolume] = useRecoilState(SelectedSampleVolume_)
+    const [pitch, setPitch] = useRecoilState(SelectedSamplePitch_)
 
     return (
         <SampleModifierWrapper>
@@ -246,17 +248,12 @@ function ChangeSample() {
 export function SampleSelector() {
     const wrapperRef = useRef(null)
     const size = useSize(wrapperRef)
-    const [volume, setVolume] = useState(80)
-    const [pitch, setPitch] = useState(0)
 
     return (
         <CanvasWrapper ref={wrapperRef}>
-            <SampleModifier usePitch={[pitch, setPitch]}
-                            useVolume={[volume, setVolume]}/>
+            <SampleModifier/>
 
-            {size && <WaveformCanvas size={size}
-                                     volume={volume}
-                                     pitch={pitch}/>}
+            {size && <WaveformCanvas size={size}/>}
             <ChangeSample/>
         </CanvasWrapper>
     )

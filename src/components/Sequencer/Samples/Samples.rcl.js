@@ -223,16 +223,36 @@ export const SelectedSample_ = atom({
     key: "selectedSample",
     default: {
         type: samplesList[0].uid,
-        sample: samplesList[0].samples[0]
+        sample: samplesList[0].samples[0],
+        volume: 80,
+        pitch: 0
     }
 })
+
+export const SelectedSamplePitch_ = selector({
+    key: "selectedSamplePitch",
+    get: ({get}) => get(SelectedSample_).pitch,
+    set: ({get, set}, val) => {
+        const ss = get(SelectedSample_)
+        set(SelectedSample_, {...ss, pitch: val})
+    }
+})
+
+export const SelectedSampleVolume_ = selector({
+    key: "selectedSampleVolume",
+    get: ({get}) => get(SelectedSample_).volume,
+    set: ({get, set}, val) => {
+        const ss = get(SelectedSample_)
+        set(SelectedSample_, {...ss, volume: val})
+    }
+})
+
 
 export const SelectedSampleType_ = selector({
     key: "selectedSampleType",
     get: ({get}) => get(SelectedSample_).type,
     set: ({get, set}, val) => {
         const sampleType = samplesList.find(s => s.uid === val)
-
         set(SelectedSample_, {
             type: val,
             sample: sampleType.samples[0]
