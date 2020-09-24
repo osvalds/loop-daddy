@@ -222,6 +222,7 @@ export const SampleList_ = atom({
 export const SelectedSample_ = atom({
     key: "selectedSample",
     default: {
+        uid: samplesList[0].uid,
         type: samplesList[0].uid,
         sample: samplesList[0].samples[0],
         volume: 80,

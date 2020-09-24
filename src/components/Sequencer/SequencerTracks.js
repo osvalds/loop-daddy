@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 import {ReactComponent as MuteIcon} from "./SequencerHeader/icons/mute.svg";
 import {ReactComponent as VolumeIcon} from "./SequencerHeader/icons/volume.svg";
 import {useRecoilState} from "recoil";
@@ -18,7 +18,15 @@ const TrackControlButton = styled.button`
   }
 `
 
-const BeatButton = styled.button`
+const NoteButton = styled.button.attrs(props => {
+    const [darker, lighter] = props.$colors
+
+    return {
+        style: {
+            background: props.$isActive ? `radial-gradient(circle, ${lighter} 25%, ${darker} 115%)` : darker
+        }
+    }
+})`
   border: 1px solid transparent;
   border-radius: 5px;
   
@@ -63,22 +71,30 @@ const BeatWrapper = styled.div`
   grid-template-rows: 50px;
 `
 
-export function SequencerTrack() {
-    const [title, setTitle] = useState("Kick 1")
+function Note({colors, noteArr}) {
+    const [volume, isActive, note, repeat, probability] = noteArr
 
+    return (
+        <NoteButton $isActive={isActive}
+                    $colors={colors}/>
+    )
+}
+
+export function SequencerTrack({title, colors, notes, uid}) {
     return (
         <TrackWrapper>
             <ControlsWrapper>
                 <TrackControlButton>S</TrackControlButton>
                 <ToggleMute/>
                 <div>
-                    Sick track name
+                    {title}
                 </div>
                 <div>***</div>
             </ControlsWrapper>
             <BeatWrapper>
-                {new Array(32).fill(0).map((el, i) =>
-                    <BeatButton key={i}/>)}
+                {notes.map((noteArr, index) => <Note key={`${uid}-${index}`}
+                                                     noteArr={noteArr}
+                                                     colors={colors}/>)}
             </BeatWrapper>
         </TrackWrapper>
     )
@@ -88,11 +104,12 @@ const TracksWrapper = styled.div`
 `
 
 export function SequencerTracks() {
-    const tracks = useRecoilState(Tracks_)
+    const [tracks] = useRecoilState(Tracks_)
 
     return (
         <TracksWrapper>
-            {tracks.map(track => <SequencerTrack key={track.uid} {...track}/>)}
+            {tracks.map(track => <SequencerTrack key={track.uid}
+                                                 {...track}/>)}
         </TracksWrapper>
     )
 }

@@ -1,26 +1,41 @@
 import {getRandomColor, uuidv4} from "../../Sugar";
 import {atom, selector, selectorFamily} from "recoil";
+import {SelectedSample_} from "./Samples/Samples.rcl";
 
 export const Tracks_ = atom({
     key: "tracks",
-    default: [
-        {
-            colors: getRandomColor(),
-            muted: false,
-            title: "Kick 1",
-            notes: [[0.8, true, "C4", 1, 100],
-                [0.8, true, "C4", 1, 100],
-                [0.8, true, "C4", 1, 100]],
-            pitch: 0,
-            sample: {
-                title: "kick-1",
-                uid: uuidv4()
-            },
-            uid: "6swrIRP9xQ-gypxEqVBcv",
-            solo: false,
-            volume: 0.8,
-        }
-    ]
+    default: []
+})
+
+const getDefaultNotes = () => {
+    return Array(32).fill([0.8, false, "C4", 1, 100])
+}
+
+const getEmptyTrack = (selectedSample) => {
+    const {type, sample, volume, pitch} = selectedSample
+    return {
+        colors: getRandomColor(),
+        muted: false,
+        title: sample,
+        notes: getDefaultNotes(),
+        pitch: pitch,
+        sample: selectedSample,
+        uid: uuidv4(),
+        solo: false,
+        volume: volume,
+    }
+
+}
+
+export const AddNewTrackSelector_ = selector({
+    key: "addNewTrack",
+    get: ({get}) => get(Tracks_),
+    set: ({get, set}) => {
+        const currentTracks = get(Tracks_)
+        const selectedSample = get(SelectedSample_)
+        const newTrack = getEmptyTrack(selectedSample)
+        set(Tracks_, [...currentTracks, newTrack])
+    }
 })
 
 export const Loop_ = atom({
