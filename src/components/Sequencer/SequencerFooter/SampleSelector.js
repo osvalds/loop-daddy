@@ -212,7 +212,7 @@ function ChangeSample() {
     console.log(samples)
     return (
         <ChangeSampleWrapper>
-            Sample selector
+            Sample selectors
         </ChangeSampleWrapper>
     )
 }

@@ -1,5 +1,5 @@
 import {getRandomColor, uuidv4} from "../../Sugar";
-import {atom} from "recoil";
+import {atom, selector, selectorFamily} from "recoil";
 
 export const Tracks_ = atom({
     key: "tracks",
@@ -32,5 +32,16 @@ export const Loop_ = atom({
         timeSignature: 4,
         title: "Untitled Unmastered",
         uid: uuidv4(),
+    }
+})
+
+export const LoopSelector_ = selectorFamily({
+    key: "loopSelector",
+    get: (k) => ({get}) => {
+        return get(Loop_)[k]
+    },
+    set: (k) => ({get, set}, val) => {
+        let loop = get(Loop_)
+        set(Loop_, {...loop, [k]: val})
     }
 })

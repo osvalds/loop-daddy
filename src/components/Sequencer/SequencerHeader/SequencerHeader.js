@@ -1,12 +1,16 @@
 import {TextToInput} from "../../TextToInput";
-import { useState } from "react";
+import {useState} from "react";
 import styled, {css, keyframes} from "styled-components"
 import {ReactComponent as PlayIcon} from "./icons/play.svg";
 import {ReactComponent as PauseIcon} from "./icons/pause.svg";
 import {ReactComponent as RecordIcon} from "./icons/record.svg";
 import {ReactComponent as StopIcon} from "./icons/stop.svg";
 import {Metronome} from "./Metronome";
+import {useRecoilState} from "recoil";
 import {TransportProperties} from "./TransportProperties";
+import {
+    LoopSelector_
+} from "../Sequencer.rcl";
 
 const BORDER_RADIUS = 8;
 
@@ -107,13 +111,17 @@ const SequencerHeaderWrapper = styled.div`
     
 `
 
-export function SequencerHeader({useTrackTitle, useBpm, useSwing}) {
+export function SequencerHeader() {
+    const useLoopTitle = useRecoilState(LoopSelector_("title"))
+    const useBPM = useRecoilState(LoopSelector_("bpm"))
+    const useSwing = useRecoilState(LoopSelector_("swing"))
+
     return (
         <SequencerHeaderWrapper>
-            <TextToInput useValue={useTrackTitle}/>
+            <TextToInput useValue={useLoopTitle}/>
             <TransportControls/>
-            <Metronome useBpm={useBpm}/>
-            <TransportProperties useBpm={useBpm}
+            <Metronome useBpm={useBPM}/>
+            <TransportProperties useBpm={useBPM}
                                  useSwing={useSwing}/>
         </SequencerHeaderWrapper>
     )

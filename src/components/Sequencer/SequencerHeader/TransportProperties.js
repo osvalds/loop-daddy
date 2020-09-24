@@ -22,12 +22,12 @@ const StyledTransportProperties = styled.div`
   align-items: center;
 `
 
-export function TransportProperties({useBpm, useSwing}) {
+export function TransportProperties({useBpm: useBPM, useSwing}) {
 
     return (
         <StyledTransportProperties>
             <InputWrapper>
-                <TextToInput useValue={useBpm}
+                <TextToInput useValue={useBPM}
                              id={"bpm"}
                              label="BPM:"
                              min={40}
