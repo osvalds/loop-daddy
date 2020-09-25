@@ -1,11 +1,11 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import styled from "styled-components";
 import * as Tone from "tone";
 import {BORDER_RADIUS, ControlButton, SequencerHeader} from "./SequencerHeader/SequencerHeader";
-import {SequencerTracks} from "./SequencerTracks";
-import {useSetRecoilState} from "recoil";
-import {AddNewTrackSelector_, Loop_, Tracks_} from "./Sequencer.rcl";
+import {useRecoilValue, useSetRecoilState} from "recoil";
+import {AddNewTrackSelector_, Loop_, TrackList_, Tracks_} from "./Sequencer.rcl";
 import {H_PADDING, SequencerFooter} from "./SequencerFooter/SequencerFooter";
+import {Track} from "./Track/Track";
 
 // 1 -> q
 // 2 -> q,w
@@ -144,10 +144,25 @@ const SequencerWrapper = styled.section`
 const AddTrack = styled(ControlButton)`
   color: white;
   width: 250px;
-  margin: 12px 0;
+  margin: 0 0  12px 0;
   font-size: 16px;
+  cursor: pointer;
   border-radius: ${BORDER_RADIUS}px;
 `
+
+const TracksWrapper = styled.div`
+`
+
+
+function SequencerTracks() {
+    const trackList = useRecoilValue(TrackList_)
+
+    return (
+        <TracksWrapper>
+            {trackList.map(trackUID => <Track key={trackUID} uid={trackUID}/>)}
+        </TracksWrapper>
+    )
+}
 
 export function Sequencer() {
     const samples = ["808-bd02", "808-bd14", "808-clap2", "808-cym01", "808-hh02", "808-sd03", "808-tme1"]
@@ -159,10 +174,10 @@ export function Sequencer() {
         <SequencerWrapper>
             {/*<Launchpad samples={samples}/>*/}
             <SequencerHeader/>
-            <SequencerTracks/>
             <AddTrack onClick={addTrack}>
                 Add new Track +
             </AddTrack>
+            <SequencerTracks/>
             <SequencerFooter/>
         </SequencerWrapper>
     )

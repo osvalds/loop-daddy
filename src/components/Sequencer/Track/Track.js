@@ -1,10 +1,11 @@
-import {useState} from "react";
-import {ReactComponent as MuteIcon} from "./SequencerHeader/icons/mute.svg";
-import {ReactComponent as VolumeIcon} from "./SequencerHeader/icons/volume.svg";
-import {useRecoilState, useSetRecoilState, useRecoilValue, useResetRecoilState} from "recoil";
 import styled from "styled-components";
-import {NoteSelectorFamily_, Track_, TrackList_, Tracks_} from "./Sequencer.rcl";
-import {NoteNewValueWhileDragging_} from "./Note.rcl";
+import React, {useState} from "react";
+import {ReactComponent as VolumeIcon} from "../SequencerHeader/icons/volume.svg";
+import {ReactComponent as MuteIcon} from "../SequencerHeader/icons/mute.svg";
+import {useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState} from "recoil";
+import {NoteNewValueWhileDragging_} from "../Note.rcl";
+import {NoteSelectorFamily_, Track_} from "../Sequencer.rcl";
+import {PopoverMenu} from "./TrackMenu";
 
 const TrackControlButton = styled.button`
   background-color: black;
@@ -31,6 +32,10 @@ const NoteButton = styled.button.attrs(props => {
   cursor:  pointer;
   border: 1px solid transparent;
   border-radius: 5px;
+  
+  &:focus {
+    outline: none;
+  }
   
   &:nth-child(4n) {
     margin-right: 5px;
@@ -97,7 +102,7 @@ function Note({colors, noteArr, onClick: setNote}) {
     )
 }
 
-export function SequencerTrack({uid}) {
+export function Track({uid}) {
     const {title, colors, notes} = useRecoilValue(Track_(uid))
     const setNote = useSetRecoilState(NoteSelectorFamily_(uid))
 
@@ -113,7 +118,7 @@ export function SequencerTrack({uid}) {
                 <div>
                     {title}
                 </div>
-                <div>***</div>
+                <PopoverMenu/>
             </ControlsWrapper>
             <BeatWrapper>
                 {notes.map((noteArr, index) => <Note key={`${uid}-${index}`}
@@ -122,18 +127,5 @@ export function SequencerTrack({uid}) {
                                                      colors={colors}/>)}
             </BeatWrapper>
         </TrackWrapper>
-    )
-}
-
-const TracksWrapper = styled.div`
-`
-
-export function SequencerTracks() {
-    const tracklist = useRecoilValue(TrackList_)
-
-    return (
-        <TracksWrapper>
-            {tracklist.map(trackUID => <SequencerTrack key={trackUID} uid={trackUID}/>)}
-        </TracksWrapper>
     )
 }
