@@ -3,7 +3,7 @@ import styled from "styled-components";
 import * as Tone from "tone";
 import {BORDER_RADIUS, ControlButton, SequencerHeader} from "./SequencerHeader/SequencerHeader";
 import {SequencerTracks} from "./SequencerTracks";
-import {useRecoilState} from "recoil";
+import {useSetRecoilState} from "recoil";
 import {AddNewTrackSelector_, Loop_, Tracks_} from "./Sequencer.rcl";
 import {H_PADDING, SequencerFooter} from "./SequencerFooter/SequencerFooter";
 
@@ -153,7 +153,7 @@ export function Sequencer() {
     const samples = ["808-bd02", "808-bd14", "808-clap2", "808-cym01", "808-hh02", "808-sd03", "808-tme1"]
     // console.log(track)
 
-    const [tracks, addTrack] = useRecoilState(AddNewTrackSelector_)
+    const addTrack = useSetRecoilState(AddNewTrackSelector_)
 
     return (
         <SequencerWrapper>

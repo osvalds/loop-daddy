@@ -1,9 +1,9 @@
 import {useState} from "react";
 import {ReactComponent as MuteIcon} from "./SequencerHeader/icons/mute.svg";
 import {ReactComponent as VolumeIcon} from "./SequencerHeader/icons/volume.svg";
-import {useRecoilState} from "recoil";
+import {useRecoilState, useSetRecoilState, useRecoilValue} from "recoil";
 import styled from "styled-components";
-import {Tracks_} from "./Sequencer.rcl";
+import {NoteSelectorFamily_, Track_, TrackList_, Tracks_} from "./Sequencer.rcl";
 
 const TrackControlButton = styled.button`
   background-color: black;
@@ -77,15 +77,17 @@ function Note({colors, noteArr, onClick}) {
 
     return (
         <NoteButton $isActive={isActive}
-                    onClick={onClick}
+                    onClick={() => onClick(!isActive)}
                     $colors={colors}/>
     )
 }
 
-export function SequencerTrack({title, colors, notes, uid}) {
+export function SequencerTrack({uid}) {
+    const {title, colors, notes} = useRecoilValue(Track_(uid))
+    const setNote = useSetRecoilState(NoteSelectorFamily_(uid))
 
-    const toggleNote = (uid, idx) => {
-
+    const toggleNote = (idx, newVal) => {
+        setNote([idx, newVal])
     }
 
     return (
@@ -100,7 +102,7 @@ export function SequencerTrack({title, colors, notes, uid}) {
             </ControlsWrapper>
             <BeatWrapper>
                 {notes.map((noteArr, index) => <Note key={`${uid}-${index}`}
-                                                     onClick={() => toggleNote(uid, index)}
+                                                     onClick={(newVal) => toggleNote(index, newVal)}
                                                      noteArr={noteArr}
                                                      colors={colors}/>)}
             </BeatWrapper>
@@ -112,12 +114,11 @@ const TracksWrapper = styled.div`
 `
 
 export function SequencerTracks() {
-    const [tracks] = useRecoilState(Tracks_)
+    const tracklist = useRecoilValue(TrackList_)
 
     return (
         <TracksWrapper>
-            {tracks.map(track => <SequencerTrack key={track.uid}
-                                                 {...track}/>)}
+            {tracklist.map(trackUID => <SequencerTrack key={trackUID} uid={trackUID}/>)}
         </TracksWrapper>
     )
 }

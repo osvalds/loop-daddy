@@ -9,7 +9,7 @@ import {Metronome} from "./Metronome";
 import {useRecoilState} from "recoil";
 import {TransportProperties} from "./TransportProperties";
 import {
-    LoopSelector_
+    LoopDataSelector_
 } from "../Sequencer.rcl";
 
 export const BORDER_RADIUS = 8;
@@ -112,9 +112,9 @@ const SequencerHeaderWrapper = styled.div`
 `
 
 export function SequencerHeader() {
-    const useLoopTitle = useRecoilState(LoopSelector_("title"))
-    const useBPM = useRecoilState(LoopSelector_("bpm"))
-    const useSwing = useRecoilState(LoopSelector_("swing"))
+    const useLoopTitle = useRecoilState(LoopDataSelector_("title"))
+    const useBPM = useRecoilState(LoopDataSelector_("bpm"))
+    const useSwing = useRecoilState(LoopDataSelector_("swing"))
 
     return (
         <SequencerHeaderWrapper>
