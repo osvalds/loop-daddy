@@ -27,6 +27,7 @@ const NoteButton = styled.button.attrs(props => {
         }
     }
 })`
+  cursor:  pointer;
   border: 1px solid transparent;
   border-radius: 5px;
   
@@ -71,16 +72,22 @@ const BeatWrapper = styled.div`
   grid-template-rows: 50px;
 `
 
-function Note({colors, noteArr}) {
+function Note({colors, noteArr, onClick}) {
     const [volume, isActive, note, repeat, probability] = noteArr
 
     return (
         <NoteButton $isActive={isActive}
+                    onClick={onClick}
                     $colors={colors}/>
     )
 }
 
 export function SequencerTrack({title, colors, notes, uid}) {
+
+    const toggleNote = (uid, idx) => {
+
+    }
+
     return (
         <TrackWrapper>
             <ControlsWrapper>
@@ -93,6 +100,7 @@ export function SequencerTrack({title, colors, notes, uid}) {
             </ControlsWrapper>
             <BeatWrapper>
                 {notes.map((noteArr, index) => <Note key={`${uid}-${index}`}
+                                                     onClick={() => toggleNote(uid, index)}
                                                      noteArr={noteArr}
                                                      colors={colors}/>)}
             </BeatWrapper>

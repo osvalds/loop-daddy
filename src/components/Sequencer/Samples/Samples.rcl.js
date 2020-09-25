@@ -253,10 +253,12 @@ export const SelectedSampleType_ = selector({
     key: "selectedSampleType",
     get: ({get}) => get(SelectedSample_).type,
     set: ({get, set}, val) => {
+        const selected = get(SelectedSample_)
         const sampleType = samplesList.find(s => s.uid === val)
         set(SelectedSample_, {
+            ...selected,
             type: val,
-            sample: sampleType.samples[0]
+            sample: sampleType.samples[0],
         })
     }
 })

@@ -252,7 +252,6 @@ export function SampleSelector() {
     return (
         <CanvasWrapper ref={wrapperRef}>
             <SampleModifier/>
-
             {size && <WaveformCanvas size={size}/>}
             <ChangeSample/>
         </CanvasWrapper>
