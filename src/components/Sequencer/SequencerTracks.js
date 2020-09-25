@@ -1,9 +1,10 @@
 import {useState} from "react";
 import {ReactComponent as MuteIcon} from "./SequencerHeader/icons/mute.svg";
 import {ReactComponent as VolumeIcon} from "./SequencerHeader/icons/volume.svg";
-import {useRecoilState, useSetRecoilState, useRecoilValue} from "recoil";
+import {useRecoilState, useSetRecoilState, useRecoilValue, useResetRecoilState} from "recoil";
 import styled from "styled-components";
 import {NoteSelectorFamily_, Track_, TrackList_, Tracks_} from "./Sequencer.rcl";
+import {NoteNewValueWhileDragging_} from "./Note.rcl";
 
 const TrackControlButton = styled.button`
   background-color: black;
@@ -66,18 +67,32 @@ const TrackWrapper = styled.div`
 `
 
 const BeatWrapper = styled.div`
+  user-select: none;
   display: grid;
   grid-auto-flow: column;
   grid-column-gap: ${TRACK_GRID_GAP}px;
   grid-template-rows: 50px;
 `
 
-function Note({colors, noteArr, onClick}) {
+function Note({colors, noteArr, onClick: setNote}) {
+    // eslint-disable-next-line no-unused-vars
     const [volume, isActive, note, repeat, probability] = noteArr
+    const [mouseDownValue, setMouseDownValue] = useRecoilState(NoteNewValueWhileDragging_)
+    const resetMouseDown = useResetRecoilState(NoteNewValueWhileDragging_)
 
     return (
         <NoteButton $isActive={isActive}
-                    onClick={() => onClick(!isActive)}
+            // onClick={() => }
+                    onMouseDown={(e) => {
+                        setNote(!isActive)
+                        setMouseDownValue(!isActive)
+                    }}
+                    onMouseUp={resetMouseDown}
+                    onMouseEnter={(e) => {
+                        if (e.buttons === 1 || e.buttons === 3) {
+                            setNote(mouseDownValue)
+                        }
+                    }}
                     $colors={colors}/>
     )
 }
